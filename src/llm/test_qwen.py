@@ -1,6 +1,8 @@
+import os
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 import time
+from datetime import datetime
 
 def test_qwen_model():
         model_path = "Qwen2.5-3B"
@@ -14,6 +16,9 @@ def test_qwen_model():
         tokenizer = AutoTokenizer.from_pretrained(model_path)
         model = AutoModelForCausalLM.from_pretrained(model_path, device_map="auto", torch_dtype="auto").to(device)
         print(f"\n[INFO]: Model {model_path} loaded successfully!")
+
+        # Ensure the logs directory exists
+        os.makedirs("logs", exist_ok=True)
 
         for i in range(2):
                 print(f"\n[INFO]: Starting timer...")
@@ -64,15 +69,25 @@ def test_qwen_model():
                         case _:
                                 continue
 
+                # Generate response
                 inputs = tokenizer(prompt, return_tensors="pt").to(device)
                 outputs = model.generate(**inputs, max_length=100)
 
-                generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True).replace(prompt, "").strip()
-                print(f"\n[ANSWER]:\n" + generated_text)
+                response = tokenizer.decode(outputs[0], skip_special_tokens=True).replace(prompt, "").strip()
+                print(f"\n[ANSWER]:\n" + response)
 
+                # Calculate execution time
                 end_time = time.time()
-                elapsed_time = end_time - start_time
-                print(f"\n[INFO]: Promt executed and response generated in {elapsed_time:.2f} seconds") 
+                execution_time = end_time - start_time
+                print(f"\n[INFO]: Promt executed and response generated in {execution_time:.2f} seconds") 
+
+                # Write to log file
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                log_filename = f"./logs/prompt_{timestamp}.log"
+                with open(log_filename, "w") as log_file:
+                        log_file.write(f"Prompt:\n{prompt}\n\n------------\n\n")
+                        log_file.write(f"Answer:\n{response}\n\n------------\n\n")
+                        log_file.write(f"Execution time: {execution_time} seconds\n\n")
 
 if __name__ == "__main__":
     test_qwen_model()
