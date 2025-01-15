@@ -50,17 +50,17 @@ def test_qwen_model():
                                         f"2. Suggest possible causes.\n" + \
                                         f"3. Recommend steps to resolve the issue.\n" + \
                                         f"\n" + \
-                                        f"Format your response like this:" + \
-                                        f"---" + \
-                                        f"**Error Explanation**:" + \
-                                        f"[Explanation]" + \
+                                        f"Format your response like this:\n" + \
+                                        f"---\n" + \
+                                        f"**Error Explanation**:\n" + \
+                                        f"[Explanation]\n" + \
                                         f"\n" + \
-                                        f"**Possible Causes**:" + \
+                                        f"**Possible Causes**:\n" + \
                                         f"- [Cause 1]\n" + \
                                         f"- [Cause 2]\n" + \
                                         f"- ...\n" + \
                                         f"\n" + \
-                                        f"**Recommended Steps**:" + \
+                                        f"**Recommended Steps**:\n" + \
                                         f"1. [Step 1]\n" + \
                                         f"2. [Step 2]\n" + \
                                         f"3. ...\n" + \
@@ -82,7 +82,7 @@ def test_qwen_model():
                 print(f"\n[INFO]: Promt executed and response generated in {execution_time:.2f} seconds") 
 
                 # Write to log file
-                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
                 log_filename = f"./logs/prompt_{timestamp}.log"
                 with open(log_filename, "w") as log_file:
                         log_file.write(f"Prompt:\n{prompt}\n\n------------\n\n")
