@@ -8,7 +8,10 @@ def test_qwen_model():
         model_path = "Qwen2.5-3B"
 
         # Determine the device
+        # WITH CUDA
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # WITH DIRECTML
+        #device = torch_directml.device()
         print(f"\n[INFO]: Device used: {device}")
 
         # Load the tokenizer and model
@@ -85,6 +88,7 @@ def test_qwen_model():
                 timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
                 log_filename = f"./logs/prompt_{timestamp}.log"
                 with open(log_filename, "w") as log_file:
+                        log_file.write(f"Device: {device}\n\n------------\n\n")
                         log_file.write(f"Prompt:\n{prompt}\n\n------------\n\n")
                         log_file.write(f"Answer:\n{response}\n\n------------\n\n")
                         log_file.write(f"Execution time: {execution_time} seconds\n\n")
