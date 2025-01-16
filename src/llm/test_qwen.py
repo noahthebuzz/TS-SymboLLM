@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 
 def test_qwen_model():
-        model_path = "Qwen2.5-3B"
+        model_name = "Qwen2.5-3B"
 
         # Determine the device
         # WITH CUDA
@@ -15,17 +15,18 @@ def test_qwen_model():
         print(f"\n[INFO]: Device used: {device}")
 
         # Load the tokenizer and model
-        print(f"\n[INFO]: Loading model {model_path}...")
-        tokenizer = AutoTokenizer.from_pretrained(model_path)
-        model = AutoModelForCausalLM.from_pretrained(model_path, device_map="auto", torch_dtype="auto").to(device)
-        print(f"\n[INFO]: Model {model_path} loaded successfully!")
+        print(f"\n[INFO]: Loading model {model_name}...")
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto", torch_dtype="auto").to(device)
+        print(f"\n[INFO]: Model {model_name} loaded successfully!")
 
         # Ensure the logs directory exists
         os.makedirs("logs", exist_ok=True)
 
-        for i in range(2):
+        for i in range(3):
                 print(f"\n[INFO]: Starting timer...")
                 start_time = time.time()
+                prompt = ""
 
                 match i:
                         case 0:
@@ -69,12 +70,14 @@ def test_qwen_model():
                                         f"3. ...\n" + \
                                         f"---"
                                 print(f"\n[PROMPT]:\n {prompt}\n")
-                        case _:
-                                continue
+                        case 2:
+                                # Simple prompt
+                                prompt = "If today is thursday, what day is it in 10 days?"
+                                print(f"\n[PROMPT]:\n {prompt}\n")
 
                 # Generate response
                 inputs = tokenizer(prompt, return_tensors="pt").to(device)
-                outputs = model.generate(**inputs, max_length=100)
+                outputs = model.generate(**inputs, max_length=10000)
 
                 response = tokenizer.decode(outputs[0], skip_special_tokens=True).replace(prompt, "").strip()
                 print(f"\n[ANSWER]:\n" + response)
@@ -85,13 +88,17 @@ def test_qwen_model():
                 print(f"\n[INFO]: Promt executed and response generated in {execution_time:.2f} seconds") 
 
                 # Write to log file
+                print(f"\n[INFO]: Writing to log file...")
                 timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
                 log_filename = f"./logs/prompt_{timestamp}.log"
                 with open(log_filename, "w") as log_file:
-                        log_file.write(f"Device: {device}\n\n------------\n\n")
+                        log_file.write(f"\nDevice: {device}\n\n------------\n\n")
                         log_file.write(f"Prompt:\n{prompt}\n\n------------\n\n")
                         log_file.write(f"Answer:\n{response}\n\n------------\n\n")
                         log_file.write(f"Execution time: {execution_time} seconds\n\n")
+                
+                print(f"\n[INFO]: Log file written successfully: {log_filename}")
+                time.sleep(1)
 
 if __name__ == "__main__":
     test_qwen_model()
