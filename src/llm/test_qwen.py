@@ -79,7 +79,7 @@ def test_qwen_model():
                                 print(f"\n[PROMPT]:\n {prompt}\n")
                         case 2:
                                 # Simple prompt
-                                prompt = "If today is thursday, what day is it in 10 days?"
+                                prompt = "Levi is my father, Grisha is Levi's brother and Eren is Grisha's son. Who is Eren to me ?"
                                 print(f"\n[PROMPT]:\n {prompt}\n")
 
                 # Generate response
