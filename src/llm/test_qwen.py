@@ -48,27 +48,34 @@ def test_qwen_model():
                                 prompt = f"You are an assistant for diagnosing robotic errors. Analyze the error based on the provided information, explain the cause of the issue, and suggest steps to resolve it.\n" + \
                                         f"Error Information:\n" + \
                                         f"{test_error}\n" + \
-                                        f"\n" + \
                                         f"Based on this information:\n" + \
-                                        f"1. Provide a brief explanation of the error.\n" + \
-                                        f"2. Suggest possible causes.\n" + \
-                                        f"3. Recommend steps to resolve the issue.\n" + \
-                                        f"\n" + \
-                                        f"Format your response like this:\n" + \
-                                        f"---\n" + \
-                                        f"**Error Explanation**:\n" + \
-                                        f"[Explanation]\n" + \
-                                        f"\n" + \
-                                        f"**Possible Causes**:\n" + \
-                                        f"- [Cause 1]\n" + \
-                                        f"- [Cause 2]\n" + \
-                                        f"- ...\n" + \
-                                        f"\n" + \
-                                        f"**Recommended Steps**:\n" + \
-                                        f"1. [Step 1]\n" + \
-                                        f"2. [Step 2]\n" + \
-                                        f"3. ...\n" + \
-                                        f"---"
+                                        f"1. Provide a brief explanation of the error. [ERROR EXPLANATION]\n" + \
+                                        f"2. Suggest possible causes. [POSSIBLE CAUSES]\n" + \
+                                        f"3. Recommend steps to resolve the issue. [RECOMMENDED STEPS]\n"
+                                #prompt = f"You are an assistant for diagnosing robotic errors. Analyze the error based on the provided information, explain the cause of the issue, and suggest steps to resolve it.\n" + \
+                                        # f"Error Information:\n" + \
+                                        # f"{test_error}\n" + \
+                                        # f"\n" + \
+                                        # f"Based on this information:\n" + \
+                                        # f"1. Provide a brief explanation of the error.\n" + \
+                                        # f"2. Suggest possible causes.\n" + \
+                                        # f"3. Recommend steps to resolve the issue.\n" + \
+                                        # f"\n" + \
+                                        # f"Format your response like this:\n" + \
+                                        # f"---\n" + \
+                                        # f"**Error Explanation**:\n" + \
+                                        # f"[Explanation]\n" + \
+                                        # f"\n" + \
+                                        # f"**Possible Causes**:\n" + \
+                                        # f"- [Cause 1]\n" + \
+                                        # f"- [Cause 2]\n" + \
+                                        # f"- ...\n" + \
+                                        # f"\n" + \
+                                        # f"**Recommended Steps**:\n" + \
+                                        # f"1. [Step 1]\n" + \
+                                        # f"2. [Step 2]\n" + \
+                                        # f"3. ...\n" + \
+                                        # f"---"
                                 print(f"\n[PROMPT]:\n {prompt}\n")
                         case 2:
                                 # Simple prompt
