@@ -1,0 +1,1 @@
+# Managet die Argumente der Kommandozeile und startet die entsprechenden Funktionen

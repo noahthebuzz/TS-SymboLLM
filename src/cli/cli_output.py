@@ -1,0 +1,1 @@
+# Generiert alle Ausgaben auf der Konsole

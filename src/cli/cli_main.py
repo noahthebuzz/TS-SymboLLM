@@ -1,0 +1,1 @@
+# Startpunkt des Programms für die Kommandozeilenanwendung
