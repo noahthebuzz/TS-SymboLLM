@@ -881,3 +881,7 @@ Qwen2.5-3B/
 .virt_env/Lib/site-packages/pip/_vendor/webencodings/x_user_defined.py
 .virt_env/Scripts/pip.exe
 .virt_env/Scripts/pip3.exe
+
+
+
+.virt_env_Qwen2.5-3B/
