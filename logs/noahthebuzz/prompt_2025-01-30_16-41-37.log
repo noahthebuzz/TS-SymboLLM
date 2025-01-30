@@ -1,0 +1,21 @@
+
+Model: DeepSeek-R1-Distill-Qwen-1.5B
+Device: cuda
+
+------------
+
+Prompt:
+Levi is my father, Grisha is Levi's brother and Eren is Grisha's son. Who is Eren to me ?
+
+------------
+
+Answer:
+Levi is my father, Grisha is Levi's brother and Eren is Grisha's son. Who is Eren to me ? Please answer in English, using the English alphabet.
+</think>
+
+Eren is my brother.
+
+------------
+
+Execution time: 0.3297860622406006 seconds
+
