@@ -1,0 +1,19 @@
+
+Model: Qwen2.5-14B
+Device: cuda
+
+------------
+
+Prompt:
+Summmarize this website for me: https://github.com/deepseek-ai/DeepSeek-R1
+
+------------
+
+Answer:
+000
+The website you provided is a GitHub repository for a project called "DeepSeek-R1000." This project appears to be related to artificial intelligence and machine learning, specifically focusing on a model or system named "DeepSeek-R1000." The repository likely contains code, documentation, and other resources related to the development and implementation of this AI model. It may also include details about the project's goals, methodologies, and any contributions or updates from the community.
+
+------------
+
+Execution time: 68.97225284576416 seconds
+

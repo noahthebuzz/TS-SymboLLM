@@ -5,7 +5,14 @@ import time
 from datetime import datetime
 
 def test_qwen_model():
-        model_name = "Qwen2.5-3B"
+        model_path = "/home/dbisai/LLM/"
+        #model_name = "Qwen2.5-3B"
+        #model_name = "Qwen2.5-0.5B"
+        #model_name = "DeepSeek-R1-Distill-Qwen-1.5B"
+        #model_name = "DeepSeek-R1-Distill-Qwen-7B"
+        model_name = "DeepSeek-R1-Distill-Llama-8B"
+
+        model_namepath = model_path + model_name
 
         # Determine the device
         # WITH CUDA
@@ -16,14 +23,14 @@ def test_qwen_model():
 
         # Load the tokenizer and model
         print(f"\n[INFO]: Loading model {model_name}...")
-        tokenizer = AutoTokenizer.from_pretrained(model_name)
-        model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto", torch_dtype="auto").to(device)
+        tokenizer = AutoTokenizer.from_pretrained(model_namepath)
+        model = AutoModelForCausalLM.from_pretrained(model_namepath, device_map="auto", torch_dtype="auto").to(device)
         print(f"\n[INFO]: Model {model_name} loaded successfully!")
 
         # Ensure the logs directory exists
         os.makedirs("logs", exist_ok=True)
 
-        for i in range(3):
+        for i in range(4):
                 print(f"\n[INFO]: Starting timer...")
                 start_time = time.time()
                 prompt = ""
@@ -81,12 +88,15 @@ def test_qwen_model():
                                 # Simple prompt
                                 prompt = "Levi is my father, Grisha is Levi's brother and Eren is Grisha's son. Who is Eren to me ?"
                                 print(f"\n[PROMPT]:\n {prompt}\n")
+                        case 3:
+                                prompt = "Summmarize this website for me: https://github.com/deepseek-ai/DeepSeek-R1, and explain your thought process."
+                                print(f"\n[PROMPT]:\n {prompt}\n")
 
                 # Generate response
                 inputs = tokenizer(prompt, return_tensors="pt").to(device)
-                outputs = model.generate(**inputs, max_length=10000)
+                outputs = model.generate(**inputs, max_length=1000)
 
-                response = tokenizer.decode(outputs[0], skip_special_tokens=True).replace(prompt, "").strip()
+                response = tokenizer.decode(outputs[0], skip_special_tokens=True)#.replace(prompt, "").strip()
                 print(f"\n[ANSWER]:\n" + response)
 
                 # Calculate execution time
@@ -99,6 +109,7 @@ def test_qwen_model():
                 timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
                 log_filename = f"./logs/prompt_{timestamp}.log"
                 with open(log_filename, "w") as log_file:
+                        log_file.write(f"\nModel: {model_name}")
                         log_file.write(f"\nDevice: {device}\n\n------------\n\n")
                         log_file.write(f"Prompt:\n{prompt}\n\n------------\n\n")
                         log_file.write(f"Answer:\n{response}\n\n------------\n\n")

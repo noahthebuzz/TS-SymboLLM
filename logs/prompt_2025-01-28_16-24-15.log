@@ -1,0 +1,18 @@
+
+Model: Qwen2.5-0.5B
+Device: cuda
+
+------------
+
+Prompt:
+Levi is my father, Grisha is Levi's brother and Eren is Grisha's son. Who is Eren to me ?
+
+------------
+
+Answer:
+Options: - brother - son - son of Levi - brother of Levi - son of Levi Let's give stream of consciousness first: Eren is Grisha's son. Eren is Levi's brother. Eren is Levi's son. Eren is Levi's brother. So the answer is son of Levi.
+
+------------
+
+Execution time: 0.4176766872406006 seconds
+
