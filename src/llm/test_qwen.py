@@ -27,9 +27,6 @@ def test_qwen_model(usr: str):
         model = AutoModelForCausalLM.from_pretrained(model_namepath, device_map="auto", torch_dtype="auto").to(device)
         print(f"\n[INFO]: Model {model_name} loaded successfully!")
 
-        # Ensure the logs directory exists
-        os.makedirs("logs", exist_ok=True)
-
         for i in range(4):
                 print(f"\n[INFO]: Starting timer...")
                 start_time = time.time()
@@ -89,7 +86,7 @@ def test_qwen_model(usr: str):
                                 prompt = "Levi is my father, Grisha is Levi's brother and Eren is Grisha's son. Who is Eren to me ?"
                                 print(f"\n[PROMPT]:\n {prompt}\n")
                         case 3:
-                                prompt = "Summmarize this website for me: https://github.com/deepseek-ai/DeepSeek-R1, and explain your thought process."
+                                prompt = "Summmarize this website for me: https://www.uni-ulm.de/in/sgi/"
                                 print(f"\n[PROMPT]:\n {prompt}\n")
 
                 # Generate response
@@ -105,17 +102,7 @@ def test_qwen_model(usr: str):
                 print(f"\n[INFO]: Promt executed and response generated in {execution_time:.2f} seconds") 
 
                 # Write to log file
-                print(f"\n[INFO]: Writing to log file...")
-                timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-                log_filename = f"./logs/" + usr + "/prompt_{timestamp}.log"
-                with open(log_filename, "w") as log_file:
-                        log_file.write(f"\nModel: {model_name}")
-                        log_file.write(f"\nDevice: {device}\n\n------------\n\n")
-                        log_file.write(f"Prompt:\n{prompt}\n\n------------\n\n")
-                        log_file.write(f"Answer:\n{response}\n\n------------\n\n")
-                        log_file.write(f"Execution time: {execution_time} seconds\n\n")
-                
-                print(f"\n[INFO]: Log file written successfully: {log_filename}")
+                log_test(usr, model_name, device, prompt, response, execution_time)
                 time.sleep(1)
 
 
@@ -124,6 +111,25 @@ def determine_user():
         print(f"\n[INFO]: User: {user}")
         
         return user
+
+def log_test(usr: str, model_name:str, device: str, prompt: str, response: str, execution_time: float):
+        # Ensure the logs directory exists
+        dirs = f"logs/{usr}"
+        os.makedirs(dirs, exist_ok=True)
+
+        # Write to log file
+        print(f"\n[INFO]: Writing to log file...")
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        log_filename = f"./logs/{usr}/prompt_{timestamp}.log"
+        with open(log_filename, "w") as log_file:
+                log_file.write(f"\nModel: {model_name}")
+                log_file.write(f"\nDevice: {device}\n\n------------\n\n")
+                log_file.write(f"Prompt:\n{prompt}\n\n------------\n\n")
+                log_file.write(f"Answer:\n{response}\n\n------------\n\n")
+                log_file.write(f"Execution time: {execution_time} seconds\n\n")
+        
+        print(f"\n[INFO]: Log file written successfully: {log_filename}")
+
 
 if __name__ == "__main__":
         usr = determine_user()
