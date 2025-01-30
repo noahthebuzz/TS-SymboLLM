@@ -4,13 +4,13 @@ import torch
 import time
 from datetime import datetime
 
-def test_qwen_model():
-        model_path = "/home/dbisai/LLM/"
+def test_qwen_model(usr: str):
+        model_path = "/home/" + usr + "/LLM/"
         #model_name = "Qwen2.5-3B"
         #model_name = "Qwen2.5-0.5B"
-        #model_name = "DeepSeek-R1-Distill-Qwen-1.5B"
+        model_name = "DeepSeek-R1-Distill-Qwen-1.5B"
         #model_name = "DeepSeek-R1-Distill-Qwen-7B"
-        model_name = "DeepSeek-R1-Distill-Llama-8B"
+        #model_name = "DeepSeek-R1-Distill-Llama-8B"
 
         model_namepath = model_path + model_name
 
@@ -107,7 +107,7 @@ def test_qwen_model():
                 # Write to log file
                 print(f"\n[INFO]: Writing to log file...")
                 timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-                log_filename = f"./logs/prompt_{timestamp}.log"
+                log_filename = f"./logs/" + usr + "/prompt_{timestamp}.log"
                 with open(log_filename, "w") as log_file:
                         log_file.write(f"\nModel: {model_name}")
                         log_file.write(f"\nDevice: {device}\n\n------------\n\n")
@@ -118,5 +118,13 @@ def test_qwen_model():
                 print(f"\n[INFO]: Log file written successfully: {log_filename}")
                 time.sleep(1)
 
+
+def determine_user():
+        user = os.getlogin()
+        print(f"\n[INFO]: User: {user}")
+        
+        return user
+
 if __name__ == "__main__":
-    test_qwen_model()
+        usr = determine_user()
+        test_qwen_model(usr)
