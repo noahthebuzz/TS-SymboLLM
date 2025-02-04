@@ -1,0 +1,22 @@
+{
+    "1": {
+        "question": "Anna is older than Ben. Ben is older than Chris. Who is the youngest??",
+        "expectedanswer": "Chris"
+    },
+    "2": {
+        "question": "You have a basket with 3 red apples and 2 green apples. You take one out without looking. What is the probability of picking a red apple?",
+        "expectedanswer": "3/5 or 60%"
+    },
+    "3": {
+        "question": "If a train leaves the station at 3:00 PM, traveling at 60 mph, how far will it have traveled by 5:00 PM?",
+        "expectedanswer": "120 miles"
+    },
+    "4": {
+        "question": "I have three boxes: one contains only apples, one contains only oranges, and one contains both apples and oranges. Each box is labeled incorrectly. If I can take out one fruit from one box, how can I determine the correct labels?",
+        "expectedanswer": "Take a fruit from the box labeled 'Apples and Oranges'. If it is an apple, then the box is labeled 'Apples'. If it is an orange, then the box is labeled 'Oranges'. The remaining two boxes can be labeled accordingly."
+    },
+    "5": {
+        "question": "A train leaves City A at 2 PM traveling at 60 km/h towards City B. Another train leaves City B, 120 km away, at 3 PM traveling at 120 km/h towards City A. At what time will they meet?",
+        "expectedanswer": "3:20 PM"
+    }
+}

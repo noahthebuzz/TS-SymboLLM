@@ -1,0 +1,22 @@
+{
+    "1": {
+        "question": "What is the captial of France?",
+        "expectedanswer": "Paris"
+    },
+    "2": {
+        "question": "How many legs does a spider have?",
+        "expectedanswer": "8"
+    },
+    "3": {
+        "question": "What is the largest planet in our solar system?",
+        "expectedanswer": "Jupiter"
+    },
+    "4": {
+        "question": "What is 5 + 7?",
+        "expectedanswer": "12"
+    },
+    "5": {
+        "question": "What color is the sky on a clear day ?",
+        "expectedanswer": "Blue"
+    }
+}
