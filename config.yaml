@@ -1,9 +1,0 @@
-# Configuration file for the application
-
-# config for the influxDB
-influx_ip: ""
-influx_port: ""
-
-# config for the LLM
-llm_type: ""
-
