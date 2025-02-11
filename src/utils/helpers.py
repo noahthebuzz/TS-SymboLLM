@@ -50,4 +50,4 @@ def generate_data(data: str, n_data_points: int = 300, params: dict = None):
 
 
 if __name__ == "__main__":
-    simulate_temperature_data()
+    generate_data(data="temperature")
