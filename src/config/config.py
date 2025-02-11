@@ -8,7 +8,6 @@ import json
 import os
 
 
-
 def write_file(data: dict):
     """
     Writes the given dictionary into the config.json, 
@@ -21,7 +20,6 @@ def write_file(data: dict):
             if key not in data.keys():
                 data[key] = old_data[key]
 
-    #print(f"TEST: {data}")
 
     with open("src/config/config.json", "w", encoding="utf-8") as config_file:
         json.dump(data, config_file, ensure_ascii=False, indent=4)
@@ -68,10 +66,9 @@ def get_content(setup_usr: str, logs: bool, ollama_param: int) -> dict:
     Param:
     ------
     Every Parameter is optional!
-        - setup_usr (str): A string with the name of the user
+        - setup_usr (str): A string with the name of the user ("noahthebuzz", "dbisai", ...)
         - logs (bool): A flag used to get logs counter 
-        - ollama_param (bool): A flag to get the stored setup (True), 
-        or the default values (False) for the LLM
+        - ollama_param (str): The setup for the LLM ("rational", "creative", "default")
 
         
     Return:
