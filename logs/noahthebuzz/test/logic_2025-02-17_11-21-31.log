@@ -1,0 +1,26 @@
+Timestamp: HH-MM-SS   DD-MM-YYYY
+           11:21:31   17-02-2025
+
+-------------------------------------------
+
+Model: TestPT
+--------------------------
+Processor: Intel Core i7-12700H
+RAM: 16 GB DDR4
+GPU: NVIDIA GeForce RTX 4060 (8GB GDDR6X, 3072 CUDA Cores)
+OS: Ubuntu 22.04
+
+-------------------------------------------
+
+Prompt [1]:
+Levi is my father, Grisha is Levi's brother and Eren is Grisha's son. Who is Eren to me ?
+
+-------------------------------------------
+
+Answer:
+Eren is my cousin
+
+-------------------------------------------
+
+Execution time: 0.5 seconds
+

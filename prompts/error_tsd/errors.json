@@ -1,0 +1,9 @@
+{
+    "1": {
+        "source": "gripper",
+        "code": 2001,
+        "error_time": "2025-02-12 12:42:58.392687",
+        "device_name": "processor",
+        "message": "Temperature limit exceeded."
+    }
+}

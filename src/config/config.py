@@ -7,8 +7,18 @@
 import json
 import os
 
+def write_file(type: str, data: any, path: str):
+    if type == "list":
+        write_file_with_list(data, path)
+    elif type == "dict":
+        write_file_with_dict(data, path)
 
-def write_file(data: dict):
+def write_file_with_list(data: list, path: str):
+    with open(path, "w", encoding="utf-8") as f:
+        for elem in data:
+            f.write(f"{elem}\n")
+
+def write_file_with_dict(data: dict, path: str):
     """
     Writes the given dictionary into the config.json, 
     overwrites already existing fields and adds new fields. 
@@ -21,7 +31,7 @@ def write_file(data: dict):
                 data[key] = old_data[key]
 
 
-    with open("src/config/config.json", "w", encoding="utf-8") as config_file:
+    with open(path, "w", encoding="utf-8") as config_file:
         json.dump(data, config_file, ensure_ascii=False, indent=4)
 
 
@@ -59,7 +69,7 @@ def read_logs_count() -> int:
         return -1
     
 
-def get_content(setup_usr: str, logs: bool, ollama_param: int) -> dict:
+def get_content(setup_usr: str, logs: bool, ollama_param: bool) -> dict:
     """
     Returns the specifically requested content from the config.json.
 
@@ -88,11 +98,11 @@ def get_content(setup_usr: str, logs: bool, ollama_param: int) -> dict:
             new_data.update({"logs": data.get("logs")})
         else:
             new_data.update({"logs": 0})
-    if ollama_param:
-        if ollama_param >= 0:
-            new_data.update({"param": data.get("ollama_parameter").get("setup_1")})
+    if ollama_param is not None:
+        if ollama_param :
+            new_data.update({"param": data.get("ollama_parameter").get("rational")})
         else:
-            new_data.update({"param": data.get("ollama_parameter").get("default")})    
+            new_data.update({"param": data.get("ollama_parameter").get("creative")})    
 
     return new_data
 
