@@ -52,6 +52,19 @@ def read_file() -> dict:
     return data
 
 
+def read_data(path: str) -> str:
+    if not os.path.exists(path):
+        return None
+    
+    data = ""
+    with open(path, "r", encoding="utf-8") as f:
+        x = f.readlines()
+
+    for line in x:
+        data += line.strip() + " "
+    #print(data)
+    return data
+
 def read_logs_count() -> int:
     """
     Reads the logs count in the config.json and returns the value.
@@ -69,7 +82,7 @@ def read_logs_count() -> int:
         return -1
     
 
-def get_content(setup_usr: str, logs: bool, ollama_param: bool) -> dict:
+def get_content(setup_usr: str = None, logs: bool = None, ollama_param: bool = None) -> dict:
     """
     Returns the specifically requested content from the config.json.
 

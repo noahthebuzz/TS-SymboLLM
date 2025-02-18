@@ -15,4 +15,4 @@ def load_model(model_path: str, model_name: str, device: str, prompt: str, data:
     else:
         generated_ids = model.generate(**inputs, **data, max_new_tokens=100)
 
-
+    

@@ -1,4 +1,5 @@
 {
+    "Instruction": "Answer the following questions step by step in bullet points of 10-20 words each.",
     "1": {
         "question": "Anna is older than Ben. Ben is older than Chris. Who is the youngest??",
         "expectedanswer": "Chris"

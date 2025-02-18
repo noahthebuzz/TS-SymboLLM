@@ -1,4 +1,5 @@
 {
+    "Instruction": "Give a short answer in just a few words.",
     "1": {
         "question": "What is the captial of France?",
         "expectedanswer": "Paris"
