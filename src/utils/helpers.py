@@ -1,6 +1,7 @@
 # Space for helper functions and classes
 import numpy as np
 import matplotlib.pyplot as plt
+from datetime import datetime, timedelta
 
 
 def plot_data(data: list, plot_label: str, x_label: str, y_label: str, title: str, output_file: str):
@@ -24,7 +25,7 @@ def plot_data(data: list, plot_label: str, x_label: str, y_label: str, title: st
     print(f"Der Plot wurde als '{output_file}' gespeichert.")
 
 
-def simulate_temperature_data(n_data_points: int, stable_temp: float = 55, stable_deviation: float = 0.5, unstable_start: int = 150, unstable_deviation: float = 1.5, increase_start: int = 225, final_temp: float = 90):
+def simulate_temperature_data(n_data_points: int, stable_temp: float = 55, stable_deviation: float = 0.5, unstable_start: int = 150, unstable_deviation: float = 1.5, increase_start: int = 225, final_temp: float = 90) -> list:
     # 0. Ruhige Phase
     ruhige_phase = np.random.normal(loc=stable_temp, scale=stable_deviation, size=unstable_start)
 
@@ -42,7 +43,7 @@ def simulate_temperature_data(n_data_points: int, stable_temp: float = 55, stabl
     # TODO: UNCOMMENT
     #plot_data(data=temperature_data, plot_label="Temperatur", x_label="Zeit (t)", y_label="Temperatur (°C)", title="Temperaturdaten mit stabiler Phase und exponentiellem Anstieg", output_file="temperaturverlauf_exponentiell.png")
 
-    return temperature_data
+    return temperature_data.tolist()
 
 
 def generate_data(data: str, n_data_points: int = 300, params: dict = None):
@@ -76,8 +77,18 @@ def generate_temperature_data(n_data_points: int = 300, params: dict = None):
     new_data = []
     for i in data:
         new_data.append(round(i))
-    return new_data
+    return generate_temp_tsd(new_data)
 
+def generate_temp_tsd(temp_data: list):
+    data = {}
+    counter = 0
+    ten_sec = timedelta(seconds=10)
+    current_time = datetime.now()
+    for value in temp_data:
+        data.update({(current_time + counter * ten_sec).strftime("%H-%M-%S"): value})
+        counter += 1
+    print(data)
+    return data
 
 '''if __name__ == "__main__":
     generate_data(data="temperature")'''

@@ -56,7 +56,7 @@ def load_ollama_parameter(isRational: bool) -> dict:
     return options['param']
 
 
-def generate_temperature_data_file(n_data_points: int = 300) -> list:
+def generate_temperature_data_file(n_data_points: int = 300) -> dict:
     params = {
         "stable_temp": 55,
         "stable_deviation": 0.75,
@@ -67,7 +67,7 @@ def generate_temperature_data_file(n_data_points: int = 300) -> list:
     }
     print(params)
     datalist = helpers.generate_temperature_data(n_data_points=n_data_points, params=params)
-    config.write_file("list", datalist, "prompts/error_tsd/test_data.txt")
+    config.write_file("list", datalist, "prompts/error_tsd/test_data.json")
     return datalist
 
 
@@ -119,8 +119,8 @@ def pull_models(large: bool = False, medium: bool = False, small: bool = False) 
     return large_models, medium_models, small_models
     
 
-def generate_prompt(instruction: str, data: list) -> str:
-    prompt = f"{instruction}: {data}"
+def generate_prompt(instruction: str, data: list, task: str) -> str:
+    prompt = f"{instruction}:\n\nData:\n{data}\n\nTask:\n{task}.\n\n"
     return prompt
 
 
@@ -129,8 +129,7 @@ def generate_response(model: str, prompt: str, params: dict) -> Iterator[Generat
         model=model, 
         prompt=prompt,
         options=params,
-        stream=True,
-        
+        stream=True
     ) 
     return response
 
@@ -150,12 +149,12 @@ import os
 
 if __name__ == "__main__":
     # only use cpu for bigger models
-    os.environ["OLLAMA_NO_CUDA"] = "1"
+    #os.environ["OLLAMA_NO_CUDA"] = "1"
 
     # generate temperature data
-    #quantity = 1000
-    #data = generate_temperature_data_file(quantity)
-    #helpers.plot_data(data=data, plot_label="Temperatur", x_label="Zeit (t)", y_label="Temperatur (°C)", title="Temperaturdaten mit stabiler Phase und exponentiellem Anstieg", output_file="temperaturverlauf_exponentiell.png")
+    quantity = 60
+    data = generate_temperature_data_file(quantity).values()
+    helpers.plot_data(data=data, plot_label="Temperatur", x_label="Zeit (t)", y_label="Temperatur (°C)", title="Temperaturdaten mit stabiler Phase und exponentiellem Anstieg", output_file="temperaturverlauf_exponentiell.png")
 
     # model
     model = "qwen2.5:14b"
@@ -166,9 +165,12 @@ if __name__ == "__main__":
     print(f"\n[PARAMETER]:\n{params}")
 
     # prompt
-    instruction = "Hier sind Temperaturdaten von einem Prozessor, die im Abstand von zehn Sekunden gemessen wurden. Der erste Messpunkt wurde um 14:00:00 Uhr gemessen. Gib mir eine Interpretation der Daten"
+    time_diff = 10
+    #instruction = f"Hier sind {quantity} Temperaturdaten von einem Prozessor, die im Abstand von {time_diff} Sekunden gemessen wurden. Es sind also Werte über einen Zeitraum von {quantity * time_diff / 60} Minuten. Der erste Messpunkt wurde um 14:00:00 Uhr (HH:MM:SS) gemessen. Interpretiere die Daten in Stichpunkten über einen Zeitraum von je 30 Minuten"
+    instruction = f"Analysze the following time series data of temperature measurements taken from a processor"
     data = config.read_data("prompts/error_tsd/test_data.txt")
-    prompt = generate_prompt(instruction=instruction, data=data)
+    tast = f"Identify overall trends"
+    prompt = generate_prompt(instruction=instruction, data=data, task=tast)
     print(f"\n[PROMPT]:\n{prompt}")
 
     # response

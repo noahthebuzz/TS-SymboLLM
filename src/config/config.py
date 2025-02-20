@@ -57,12 +57,17 @@ def read_data(path: str) -> str:
         return None
     
     data = ""
-    with open(path, "r", encoding="utf-8") as f:
-        x = f.readlines()
+    if path.endswith(".json"):
+        with open(path, "r", encoding="utf-8") as f:
+            x = json.load(f)
+            for elem in x:
+                data += elem + " "
+    else:
+        with open(path, "r", encoding="utf-8") as f:
+            x = f.readlines()
 
-    for line in x:
-        data += line.strip() + " "
-    #print(data)
+        for line in x:
+            data += line.strip() + " "
     return data
 
 def read_logs_count() -> int:
