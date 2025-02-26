@@ -1,140 +1,175 @@
-# Configfile and parameters
-
-# Hier werden Pfade eingestellt und in einer Config File gespeichert
-# ... IP der influxDB
-# ... Pfad zum LLM
-
 import json
 import os
 
-def write_file(type: str, data: any, path: str):
-    if type == "list":
-        write_file_with_list(data, path)
-    elif type == "dict":
-        write_file_with_dict(data, path)
-
-def write_file_with_list(data: list, path: str):
-    with open(path, "w", encoding="utf-8") as f:
-        for elem in data:
-            f.write(f"{elem}\n")
-
-def write_file_with_dict(data: dict, path: str):
-    """
-    Writes the given dictionary into the config.json, 
-    overwrites already existing fields and adds new fields. 
-    """
-
-    old_data = read_file()
-    if old_data is not None:
-        for key in old_data.keys():
-            if key not in data.keys():
-                data[key] = old_data[key]
-
-
-    with open(path, "w", encoding="utf-8") as config_file:
-        json.dump(data, config_file, ensure_ascii=False, indent=4)
-
-
-def read_file() -> dict:
-    """
-    Reads the content of the config.json.
-
-    Return:
-    -------
-        - the content as a dictionary.
-    """
-
-    if not os.path.exists("src/config/config.json"):
-        return None
-    
-    with open("src/config/config.json", "r", encoding="utf-8") as config_file:
-        data = json.load(config_file)
-    return data
-
-
-def read_data(path: str) -> str:
-    if not os.path.exists(path):
-        return None
-    
-    data = ""
-    if path.endswith(".json"):
-        with open(path, "r", encoding="utf-8") as f:
-            x = json.load(f)
-            for elem in x:
-                data += elem + " "
-    else:
-        with open(path, "r", encoding="utf-8") as f:
-            x = f.readlines()
-
-        for line in x:
-            data += line.strip() + " "
-    return data
-
-def read_logs_count() -> int:
-    """
-    Reads the logs count in the config.json and returns the value.
-
-    Return:
-    -------
-        - the stored value of the logs count
-        - -1 if no value stored
-    """
-    
-    data = read_file()
-    if data.get("logs") is not None:
-        return data.get("logs")
-    else:
-        return -1
-    
-
-def get_content(setup_usr: str = None, logs: bool = None, ollama_param: bool = None) -> dict:
-    """
-    Returns the specifically requested content from the config.json.
-
-    Param:
-    ------
-    Every Parameter is optional!
-        - setup_usr (str): A string with the name of the user ("noahthebuzz", "dbisai", ...)
-        - logs (bool): A flag used to get logs counter 
-        - ollama_param (str): The setup for the LLM ("rational", "creative", "default")
-
+def write_json(data: dict, path: str, overwrite: bool) -> bool:
+    try:
+        if not overwrite:
+            if os.path.exists(path):
+                old_data = read_json(path=path)
+                if old_data:
+                    for key in old_data.keys():
+                        if key not in data.keys():
+                            data[key] = old_data[key]
         
-    Return:
-    -------
-    Returns the requested data!
-        - setup_usr: -> {setup_usr: dict{"Processor", "RAM", "GPU", "OS"}}
-        - logs: -> {"logs": int}
-        - ollama_param: -> {"param": dict{"mirostat", "mirostat_eta", "mirostat_tau", "num_ctx", "repeat_last_n", "repeat_penalty", "temperature", "seed", "num_predict", "top_k", "top_p", "min_p"}}
-    """
-
-    data = read_file()
-    new_data = {}
-    if setup_usr:
-        new_data.update({setup_usr: data.get("setup").get(setup_usr)})
-    if logs:
-        if data.get("logs") is not None:
-            new_data.update({"logs": data.get("logs")})
-        else:
-            new_data.update({"logs": 0})
-    if ollama_param is not None:
-        if ollama_param :
-            new_data.update({"param": data.get("ollama_parameter").get("rational")})
-        else:
-            new_data.update({"param": data.get("ollama_parameter").get("creative")})    
-
-    return new_data
+        with open(path, 'w') as file:
+            json.dump(data, file, indent=4)
+        return True
+    except Exception as e:
+        return False
 
 
-
-'''
-if __name__ == "__main__":
-    #data = {"setup": {"setup_noahthebuzz": {"Processor": "Intel Core i7-12700H", "RAM": "16 GB DDR4", "GPU": "NVIDIA GeForce RTX 4060 (8GB GDDR6X, 3072 CUDA Cores)", "OS": "Ubuntu 22.04"}, "setup_dbisai": {"Processor": "Intel Core i9-14900K", "RAM": "64 GB DDR5", "GPU": "NVIDIA GeForce RTX 4090 (24GB GDDR6X, 16384 CUDA Cores)", "OS": "Ubuntu 22.04"}}}
-    #data = {"logs": 0}
+def read_json(path: str) -> dict | None:
+    try:
+        if os.path.exists(path):
+            with open(path, 'r') as file:
+                return json.load(file)
+        return None
+    except Exception as e:
+        print(f"[ERROR]:\n{e}")
+        return None
     
-    write_file(data)
-'''
 
-'''
+def get_config_content(setup_usr: str = None, logs: bool = None, ollama_param: str = None, models: list[str] = None) -> dict | None:
+    if setup_usr is None and logs is None and ollama_param is None and models is None:
+        return None
+    try:
+        data = read_json("src/config/config.json")
+        new_data = {}
+
+        # USER
+        if setup_usr:
+            new_data.update({setup_usr: data.get("setup").get(setup_usr)})
+
+        # LOGS
+        if logs:
+            if data.get("logs") is not None:
+                new_data.update({"logs": data.get("logs")})
+            else:
+                new_data.update({"logs": 0})
+
+        # OLLAMA PARAMETER
+        if ollama_param:
+            if ollama_param == "rational":
+                new_data.update({"params": data.get("ollama_parameter").get("rational")})
+            elif ollama_param == "creative":
+                new_data.update({"params": data.get("ollama_parameter").get("creative")}) 
+
+        # MODELS
+        if models is not None:
+            model_list = []
+            for model in models:
+                for x in data.get("models").get(model):
+                    model_list.append(x)
+                new_data.update({"models": model_list})
+
+        return new_data
+    except Exception as e:
+        print(f"[ERROR]:\n{e}")
+        return None
+    
+
+def get_ollama_parameter(isRational: bool) -> dict:
+    options = get_config_content(ollama_param="rational" if isRational else "creative")
+    return options.get("params")
+    
+
+def get_models(large: bool, medium: bool, small: bool) -> list[str]:
+    '''
+    Returns
+    -------
+    "large" : ["qwen2.5:72b", "llama3.3:70b"]
+
+    "medium" : ["qwen2.5:14b", "phi4:14b", "llava:13b"]
+
+    "small" : ["llama3.1:8b", "mistral:7b", "qwen2.5:7b", "gemma:7b"]
+    '''
+    model_names = []
+    if large:
+        model_names.append("large")
+    if medium:
+        model_names.append("medium")
+    if small:    
+        model_names.append("small")
+    models = get_config_content(models=model_names).get("models")
+    return models
+
+
+def get_ollama_params(isRational: bool) -> dict:
+    '''
+    Returns
+    -------
+    "mirostat": int
+
+    "mirostat_eta": float
+
+    "mirostat_tau": float
+
+    "num_ctx": int
+
+    "repeat_last_n": int
+
+    "repeat_penalty": float
+
+    "temperature": float
+
+    "seed": long
+
+    "num_predict": int
+
+    "top_k": int
+
+    "top_p": float
+
+    "min_p": float
+    '''
+    if isRational:
+        return get_config_content(ollama_param="rational").get("params")
+    else:
+        return get_config_content(ollama_param="creative").get("params")
+
+    
+def read_prompt(path: str) -> tuple[str, dict, str] | None:
+    '''
+    Parameters
+    ----------
+    path : str 
+        Path to the prompt file
+
+    Returns
+    -------
+    tuple : str, dict, str | None
+        contains (instruction, data, tasks)
+    '''
+    data = read_json(path=path)
+    if data:
+        task, data, context, output = data.get("task"), data.get("data"), data.get("additional_context"), data.get("desired_output")
+        print(f"[path={path}]\nTask: {task}\nData: {data}\nContext: {context}\nOutput: {output}\n")
+        return task, data, context, output 
+    else:
+        return None
+    
+
+def read_all_prompts() -> list[tuple[str, str, dict, str]] | None:
+    '''
+    Returns
+    -------
+    list : tuple[str, str, dict, str] | None
+        contains (path, instruction, data, tasks)
+    '''
+    prompts = []
+    for root, dirs, files in os.walk('prompts'):
+        for file in files:
+            path = os.path.join(root, file)
+            task, data, context, output = read_prompt(path)
+            prompts.append((path, task, data, context, output))
+    return prompts
+
+
 if __name__ == "__main__":
-    print(get_content(setup_usr="noahthebuzz", logs=True, ollama_param=1))
-'''
+    prompts = read_all_prompts()
+    for prompt in prompts:
+        path, task, data, context, output = prompt
+
+    print(get_models(large=True, medium=True, small=True))
+    print(get_ollama_params(isRational=True))
+    print(get_ollama_params(isRational=False))

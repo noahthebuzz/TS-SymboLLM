@@ -1,179 +1,64 @@
-#from ollama import chat, ChatResponse, list, GenerateResponse, generate, pull
-import ollama
-
-'''
-EXAMPLES
-'''
-
-'''response: GenerateResponse = generate(
-    model='qwen2.5:14b', 
-    prompt='Ich gebe dir 10 Temperaturdaten von einem Prozessor, die immer im Abstand von 10 Sekunden gemessen wurden. Gib mir eine Interpretation der Daten: 50 45 43 46 52 55 50 60 75 92',
-    options={
-        'mirostat': 2,
-        'seed': 0,
-        'temperature': 0,
-        'top_k': 0,
-        'top_p': 0.1,
-        'min_p': 0.0,
-        'num_ctx': 2048
-    }
-) 
-print(f"\n[GENERATE]:\n{response['response']}")'''
-
-'''
-response: ChatResponse = chat(
-    model='qwen2.5:14b', 
-    messages=[
-        {
-            'role': 'user',
-            'content': 'Ich gebe dir 10 Temperaturdaten von einem Prozessor, die immer im Abstand von 10 Sekunden gemessen wurden. Gib mir eine Interpretation der Daten: 50 45 43 46 52 55 50 60 75 92'
-        }
-    ],
-    options={
-        'mirostat': 0,
-        'seed': 0,
-        'temperature': 0,
-        'top_k': 0,
-        'top_p': 0.1,
-        'min_p': 0.0,
-        'num_ctx': 2048
-    }
-)
-print(f"\n[CHAT]:\n{response['message']['content']}")
-'''
 
 
-
-
-from utils import helpers
+import utils.funcllama as funcllama
+import numpy as np
 from config import config
-from typing import Iterator
-import ollama
-from ollama import GenerateResponse
-
-def load_ollama_parameter(isRational: bool) -> dict:
-    options = config.get_content(ollama_param=isRational)
-    return options['param']
+from utils.helpers import generate_tsd, plot_tsd
+import logger
+import time
 
 
-def generate_temperature_data_file(n_data_points: int = 300) -> dict:
-    params = {
-        "stable_temp": 55,
-        "stable_deviation": 0.75,
-        "unstable_start": round(n_data_points // 2),
-        "unstable_deviation": 2.5,
-        "increase_start": round(n_data_points // 1.35),
-        "final_temp": 90
-    }
-    print(params)
-    datalist = helpers.generate_temperature_data(n_data_points=n_data_points, params=params)
-    config.write_file("list", datalist, "prompts/error_tsd/test_data.json")
-    return datalist
+def generate_data(random: bool = False, temperature: bool = False, sequence: bool = False):
+    if random:
+        data = {"data": generate_tsd(kind_of_data="random", n_instances=np.random.randint(low=1, high=101), interval_sec=60)}
+        config.write_json(data=data, path="prompts/random_test.json", overwrite=False)
+
+    if temperature:
+        data = {"data": generate_tsd(kind_of_data="temperature", n_instances=360, interval_sec=10)}
+        config.write_json(data=data, path="prompts/temperature_test.json", overwrite=False)
+
+    if sequence:
+        # 0: even numbers, 1: odd numbers, 2: squared numbers, 3: oscillating harmonic numbers, 4: prime numbers
+        data = {"data": generate_tsd(kind_of_data="sequence", n_instances=10, interval_sec=3, sequence=0)}
+        config.write_json(data=data, path="prompts/sequence_test.json", overwrite=False)
 
 
-def pull_ollama_model(model: str) -> None:
-    response = ollama.pull(model=model, stream=True)
-    progress_states = set()
-    for progress in response:
-        if progress.get('status') in progress_states:
-            continue
-        progress_states.add(progress.get('status'))
-        print(progress.get('status'))
-    print('\n')
+def generate_prompt(path: str) -> str:
+    task, data, context, output = config.read_prompt(path=path)
+    return f"Task:\n{task}\nData:\n{data}\nAdditional context:\n{context}\nDesired output format:\n{output}\n"
 
 
-def pull_models(large: bool = False, medium: bool = False, small: bool = False) -> tuple:
-    ring = 0
-    large_models = []
-    medium_models = []
-    small_models = []
-    with open("src/config/models.txt", "r", encoding="utf-8") as f:
-        for line in f:
-            if "LARGE MODELS" in line:
-                ring = 1
-                continue
-            elif "MEDIUM MODELS" in line:
-                ring = 2
-                continue
-            elif "SMALL MODELS" in line:
-                ring = 3
-                continue
-
-            if ring == 1:
-                large_models.append(line.strip())
-            elif ring == 2:
-                medium_models.append(line.strip())
-            elif ring == 3:
-                small_models.append(line.strip())
-    
-    if large:
-        for model in large_models:
-            pull_ollama_model(model)
-    if medium:
-        for model in medium_models:
-            pull_ollama_model(model)
-    if small:
-        for model in small_models:
-            pull_ollama_model(model)
-    
-    return large_models, medium_models, small_models
-    
-
-def generate_prompt(instruction: str, data: list, task: str) -> str:
-    prompt = f"{instruction}:\n\nData:\n{data}\n\nTask:\n{task}.\n\n"
-    return prompt
+def increase_logs_counter():
+    logs = config.get_config_content(logs=True).get("logs")
+    logs += 1
+    config.write_json(data={"logs": logs}, path="src/config/config.json", overwrite=False)
 
 
-def generate_response(model: str, prompt: str, params: dict) -> Iterator[GenerateResponse]:
-    response: Iterator[GenerateResponse] = ollama.generate(
-        model=model, 
-        prompt=prompt,
-        options=params,
-        stream=True
-    ) 
-    return response
+def main():
+    test_large_models, test_medium_models, test_small_models = False, False, False
+    models = []
+    if test_large_models or test_medium_models or test_small_models:
+        models = config.get_models(large=test_large_models, medium=test_medium_models, small=test_small_models)
+    else:
+        models = ["qwen2.5:14b", "qwen2.5:7b"]
+    for model in models:
+        funcllama.pull_ollama_model(model=model)
 
+    params = config.get_ollama_params(isRational=True)
 
-def print_response(response: Iterator[GenerateResponse]) -> None:
-    try:
-        for part in response:
-            print(part['response'], end='', flush=True)
-    except StopIteration:
-        # Response is finished
-        print('\n[ERROR]\n')
-    print('\n\n[FINISHED]\n')
-
-
-import os
-
+    for model in models:
+        print(f"\nTesting model: {model}\n")
+        for i in range(1):
+            start_time = time.time()
+            prompt_path = ["prompts/sequence_test.json", "prompts/temperature_test.json", "prompts/random_test.json"][i]
+            prompt = generate_prompt(prompt_path)
+            response = funcllama.generate_response(model=model, prompt=prompt, params=params)
+            response_string = funcllama.print_response(response)
+            execution_time = time.time() - start_time
+            logger.log(model_name=model, ollama_params=params, prompt=prompt, response=response_string, execution_time=execution_time)
+    increase_logs_counter()
+            
 
 if __name__ == "__main__":
-    # only use cpu for bigger models
-    #os.environ["OLLAMA_NO_CUDA"] = "1"
-
-    # generate temperature data
-    quantity = 60
-    data = generate_temperature_data_file(quantity).values()
-    helpers.plot_data(data=data, plot_label="Temperatur", x_label="Zeit (t)", y_label="Temperatur (°C)", title="Temperaturdaten mit stabiler Phase und exponentiellem Anstieg", output_file="temperaturverlauf_exponentiell.png")
-
-    # model
-    model = "qwen2.5:14b"
-    print(f"\n[MODEL]:\n{model}")
-
-    # model parameter
-    params = load_ollama_parameter(isRational=True)
-    print(f"\n[PARAMETER]:\n{params}")
-
-    # prompt
-    time_diff = 10
-    #instruction = f"Hier sind {quantity} Temperaturdaten von einem Prozessor, die im Abstand von {time_diff} Sekunden gemessen wurden. Es sind also Werte über einen Zeitraum von {quantity * time_diff / 60} Minuten. Der erste Messpunkt wurde um 14:00:00 Uhr (HH:MM:SS) gemessen. Interpretiere die Daten in Stichpunkten über einen Zeitraum von je 30 Minuten"
-    instruction = f"Analysze the following time series data of temperature measurements taken from a processor"
-    data = config.read_data("prompts/error_tsd/test_data.txt")
-    tast = f"Identify overall trends"
-    prompt = generate_prompt(instruction=instruction, data=data, task=tast)
-    print(f"\n[PROMPT]:\n{prompt}")
-
-    # response
-    print("\n[RESPONSE]:")
-    response = generate_response(model=model, prompt=prompt, params=params)
-    print_response(response)
+    generate_data(random=False, temperature=False, sequence=False)
+    main()
