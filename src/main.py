@@ -21,7 +21,10 @@ def generate_data(random: bool = False, temperature: bool = False, sequence: boo
     if sequence:
         for i in range(5):
             # 0: even numbers, 1: odd numbers, 2: squared numbers, 3: oscillating harmonic numbers, 4: prime numbers
-            data = {"data": generate_tsd(kind_of_data="sequence", n_instances=10, interval_sec=3, sequence=i)}
+            task = {"task": "Identify the underlying pattern of a numerical sequence where only every third value is provided. Fill in the missing numbers and return the complete sequence."}
+            additional_context = {"additional_context": "The given data represents every third value of a complete numerical sequence. The missing values between the given numbers follow the same underlying pattern. Your goal is to infer the rule governing the sequence and reconstruct the full set of numbers."}
+            desired_output = {"desired_output": "Return a list containing the complete numerical sequence, including the missing values in their correct positions. Do not include any additional commentary, only the reconstructed sequence. Also return a list containing the timestamps of every single value."}
+            data = {"data": generate_tsd(kind_of_data="sequence", n_instances=10, interval_sec=3, sequence=i), **task, **additional_context, **desired_output}
             config.write_json(data=data, path=f"prompts/sequence_{['even', 'odd', 'squared', 'oscharm', 'prime'][i]}_test.json", overwrite=False)
 
 

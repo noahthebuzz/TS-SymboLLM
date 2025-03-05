@@ -1,14 +1,17 @@
 {
     "data": {
-        "11:42:07": 0,
-        "11:42:10": 9,
-        "11:42:13": 36,
-        "11:42:16": 81,
-        "11:42:19": 144,
-        "11:42:22": 225,
-        "11:42:25": 324,
-        "11:42:28": 441,
-        "11:42:31": 576,
-        "11:42:34": 729
-    }
+        "14:24:26": 0,
+        "14:24:29": 9,
+        "14:24:32": 36,
+        "14:24:35": 81,
+        "14:24:38": 144,
+        "14:24:41": 225,
+        "14:24:44": 324,
+        "14:24:47": 441,
+        "14:24:50": 576,
+        "14:24:53": 729
+    },
+    "task": "Identify the underlying pattern of a numerical sequence where only every third value is provided. Fill in the missing numbers and return the complete sequence.",
+    "additional_context": "The given data represents every third value of a complete numerical sequence. The missing values between the given numbers follow the same underlying pattern. Your goal is to infer the rule governing the sequence and reconstruct the full set of numbers.",
+    "desired_output": "Return a list containing the complete numerical sequence, including the missing values in their correct positions. Do not include any additional commentary, only the reconstructed sequence. Also return a list containing the timestamps of every single value."
 }
