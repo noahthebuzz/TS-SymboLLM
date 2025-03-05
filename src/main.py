@@ -75,7 +75,8 @@ def main():
 
 if __name__ == "__main__":
     if os.getlogin() == "dbisai":
-        main()
+        #main()
+        generate_data(random=False, temperature=False, sequence=True)
     else:
         generate_data(random=False, temperature=False, sequence=True)
         #funcllama.chat(model="qwen2.5:3b", params=config.get_ollama_params(isRational=True))
