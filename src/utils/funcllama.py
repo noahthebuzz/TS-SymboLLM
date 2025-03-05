@@ -51,7 +51,16 @@ def print_response(response: Iterator[GenerateResponse]) -> str:
 
 
 def get_current_weather_information(city: str) -> dict:
-    return {city: {'temperature': 12, 'humidity': 0.5, 'wind_speed': 10, 'wind_direction': 'NE', 'weather': 'cloudy'}}
+    """
+    Get the current weather information for a city
+
+    Args:
+        city (str): The city to get the weather information for
+
+    Returns:
+        dict: The weather information containing temperature, humidity, wind speed, wind direction, and weather condition
+    """
+    return {city: {'temperature': 12, 'humidity': 0.5, 'wind_speed': 10, 'wind_direction': 'NE', 'weather condition': 'cloudy'}}
 
 def add_two_numbers(a: int, b: int) -> int:
     """
@@ -68,22 +77,28 @@ def add_two_numbers(a: int, b: int) -> int:
     return int(a) + int(b)
 
 def subtract_two_numbers(a: int, b: int) -> int:
-    '''
-    Subtracts two numbers
+    """
+    Subtract two numbers
 
     Args:
-    a: int - first number
-    b: int - second number
+        a (int): The first number
+        b (int): The second number
 
     Returns:
-    int - the result of the subtraction
-    '''
+        int: The subtraction of the two numbers
+    """
     print(f"[FUNC] Subtracting {a} - {b}")
     return int(a) - int(b)
 
 
 def chat(model: str, params: dict) -> str:
     messages = []
+
+    available_functions = {
+        'add_two_numbers': add_two_numbers,
+        'subtract_two_numbers': subtract_two_numbers,
+        'get_current_weather_information': get_current_weather_information,
+    }
 
     while True:
         print(f"\n[USER]:")
@@ -92,15 +107,44 @@ def chat(model: str, params: dict) -> str:
             print("Goodbye!")
             break
 
-        response = ollama.chat(
+        messages.append({'role': 'user', 'content': user_input})
+
+        response: ChatResponse = ollama.chat(
             model=model,
             options=params,
+            messages=messages,
             tools=[add_two_numbers, subtract_two_numbers, get_current_weather_information],
-            messages=messages + [{'role': 'user', 'content': user_input}],
-            stream=True
         )
+
+        if response.message.tool_calls:
+        # There may be multiple tool calls in the response
+            for tool in response.message.tool_calls:
+                # Ensure the function is available, and then call it
+                if function_to_call := available_functions.get(tool.function.name):
+                    print('[INFO] Calling function:', tool.function.name)
+                    print('[INFO] Arguments:', tool.function.arguments)
+                    output = function_to_call(**tool.function.arguments)
+                    print('[INFO] Function output:', output)
+                else:
+                    print('[INFO] Function', tool.function.name, 'not found')
+
+        print(f"[DEBUG]: {response.message.content}")
+        print(f"[MESSAGES]: {messages}")
+
+        # Only needed to chat with the model using the tool call results
+        if response.message.tool_calls:
+            # Add the function response to messages for the model to use
+            messages.append(response.message)
+            messages.append({'role': 'tool', 'content': str(output), 'name': tool.function.name})
+
+            # Get final response from model with function outputs
+            final_response = ollama.chat('qwen2.5:3b', messages=messages, options=params)
+            print('\n[AI]:', final_response.message.content)
+
+        else:
+            print('No tool calls returned from model')
         
-        print(f"\n[AI]:")
+        """print(f"\n[AI]:")
         content = ''
         for part in response:
             content += part['message']['content']
@@ -109,4 +153,4 @@ def chat(model: str, params: dict) -> str:
         messages += [{'role': 'user', 'content': user_input},
                      {'role': 'assistant', 'content': content}]
         
-        print("\n\n[MESSAGES]:", messages)
+        print("\n\n[MESSAGES]:", messages)"""

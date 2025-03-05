@@ -63,7 +63,6 @@ response: ChatResponse = chat(
   'qwen2.5:7b',
   messages=messages,
   tools=[add_two_numbers, subtract_two_numbers],
-  stream=True
 )
 
 if response.message.tool_calls:

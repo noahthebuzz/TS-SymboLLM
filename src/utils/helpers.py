@@ -62,9 +62,7 @@ def generate_temperature_data(n_data_points: int, start_temp: float, stable_devi
     return temperature_data.tolist()
 
 
-def generate_sequence_data(n_instances: int,  type_of_sequence: int) -> list[int]:
-    every_n_th_number = 3
-
+def generate_sequence_data(n_instances: int,  type_of_sequence: int, every_n_th_number: int = 3) -> list[int]:    
     if every_n_th_number < 1:
         every_n_th_number = 1
 

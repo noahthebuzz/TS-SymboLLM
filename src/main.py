@@ -6,6 +6,7 @@ from config import config
 from utils.helpers import generate_tsd, plot_tsd
 import logger
 import time
+import os
 
 
 def generate_data(random: bool = False, temperature: bool = False, sequence: bool = False):
@@ -35,12 +36,18 @@ def increase_logs_counter():
 
 
 def main():
-    test_large_models, test_medium_models, test_small_models = False, False, False
+
+    # Determine the models to test based on the user
     models = []
+    if os.getlogin() == "dbisai":
+        test_large_models, test_medium_models, test_small_models = True, True, True
+    else:
+        test_large_models, test_medium_models, test_small_models = False, False, False
+
     if test_large_models or test_medium_models or test_small_models:
         models = config.get_models(large=test_large_models, medium=test_medium_models, small=test_small_models)
-    else:
-        models = ["qwen2.5:14b", "qwen2.5:7b"]
+    
+    # Pull the models
     for model in models:
         funcllama.pull_ollama_model(model=model)
 
@@ -60,6 +67,8 @@ def main():
             
 
 if __name__ == "__main__":
-    #generate_data(random=False, temperature=False, sequence=False)
-    #main()
-    funcllama.chat(model="qwen2.5:14b", params=config.get_ollama_params(isRational=True))
+    if os.getlogin() == "dbisai":
+        #generate_data(random=False, temperature=False, sequence=False)
+        main()
+    else:
+        funcllama.chat(model="qwen2.5:3b", params=config.get_ollama_params(isRational=True))
