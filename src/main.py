@@ -19,9 +19,10 @@ def generate_data(random: bool = False, temperature: bool = False, sequence: boo
         config.write_json(data=data, path="prompts/temperature_test.json", overwrite=False)
 
     if sequence:
-        # 0: even numbers, 1: odd numbers, 2: squared numbers, 3: oscillating harmonic numbers, 4: prime numbers
-        data = {"data": generate_tsd(kind_of_data="sequence", n_instances=10, interval_sec=3, sequence=0)}
-        config.write_json(data=data, path="prompts/sequence_test.json", overwrite=False)
+        for i in range(5):
+            # 0: even numbers, 1: odd numbers, 2: squared numbers, 3: oscillating harmonic numbers, 4: prime numbers
+            data = {"data": generate_tsd(kind_of_data="sequence", n_instances=10, interval_sec=3, sequence=i)}
+            config.write_json(data=data, path=f"prompts/sequence_{['even', 'odd', 'squared', 'oscharm', 'prime'][i]}_test.json", overwrite=False)
 
 
 def generate_prompt(path: str) -> str:
@@ -68,7 +69,7 @@ def main():
 
 if __name__ == "__main__":
     if os.getlogin() == "dbisai":
-        #generate_data(random=False, temperature=False, sequence=False)
         main()
     else:
-        funcllama.chat(model="qwen2.5:3b", params=config.get_ollama_params(isRational=True))
+        generate_data(random=False, temperature=False, sequence=True)
+        #funcllama.chat(model="qwen2.5:3b", params=config.get_ollama_params(isRational=True))
