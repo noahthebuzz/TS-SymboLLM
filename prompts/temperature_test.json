@@ -362,6 +362,6 @@
         "14:32:10": 95.0
     },
     "task": "Analyze the temperature time-series data of a specific processor. Identify trends, anomalies, and potential patterns in the temperature behavior over time.",
-    "additional_context": "The data represents recorded temperature values of a processor at 10 seconds intervals. The goal is to determine if there are any significant trends (e.g., rising/falling temperature), sudden spikes, cyclical patterns, or anomalies that could indicate potential issues such as overheating or unstable thermal performance.",
+    "additional_context": "The data represents recorded temperature values of a processor every 10 seconds. The goal is to determine if there are any significant trends (e.g., rising/falling temperature), sudden spikes, cyclical patterns, or anomalies that could indicate potential issues such as overheating or unstable thermal performance.",
     "desired_output": "Provide an analysis of the temperature trends and patterns. Highlight any anomalies, possible causes, and recommendations for maintaining optimal processor temperature. The response should be structured, starting with key observations, followed by explanations, and concluding with potential actions or recommendations."
 }

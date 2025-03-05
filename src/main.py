@@ -60,5 +60,6 @@ def main():
             
 
 if __name__ == "__main__":
-    generate_data(random=False, temperature=False, sequence=False)
-    main()
+    #generate_data(random=False, temperature=False, sequence=False)
+    #main()
+    funcllama.chat(model="qwen2.5:14b", params=config.get_ollama_params(isRational=True))
