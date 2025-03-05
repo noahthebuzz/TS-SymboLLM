@@ -56,9 +56,10 @@ def main():
 
     for model in models:
         print(f"\nTesting model: {model}\n")
-        for i in range(1):
+        prompt_paths = config.get_all_prompt_paths()
+        for i in range(len(prompt_paths)):
             start_time = time.time()
-            prompt_path = ["prompts/sequence_test.json", "prompts/temperature_test.json", "prompts/random_test.json"][i]
+            prompt_path = prompt_paths[i]
             prompt = generate_prompt(prompt_path)
             response = funcllama.generate_response(model=model, prompt=prompt, params=params)
             response_string = funcllama.print_response(response)

@@ -165,6 +165,21 @@ def read_all_prompts() -> list[tuple[str, str, dict, str]] | None:
     return prompts
 
 
+def get_all_prompt_paths() -> list[str]:
+    '''
+    Returns
+    -------
+    list : str
+        list of paths to all prompt files
+    '''
+    paths = []
+    for root, dirs, files in os.walk('prompts'):
+        for file in files:
+            path = os.path.join(root, file)
+            paths.append(path)
+    return paths
+
+
 if __name__ == "__main__":
     prompts = read_all_prompts()
     for prompt in prompts:
