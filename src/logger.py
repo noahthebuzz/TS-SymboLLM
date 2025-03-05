@@ -12,7 +12,7 @@ def format_logs_counter(counter: int) -> str:
     counter = str(counter)
     return '0' * (6 - len(counter)) + counter
 
-def log(model_name: str, ollama_params: dict, prompt: str, response: str, execution_time: float, test: bool = False):
+def log(model_name: str, ollama_params: dict, prompt_type: str, prompt: str, response: str, execution_time: float, test: bool = False):
     usr = determine_usr()
     config_data = config.get_config_content(setup_usr=usr, logs=True)
 
@@ -25,7 +25,19 @@ def log(model_name: str, ollama_params: dict, prompt: str, response: str, execut
             usr_setup, logs = config_data.get(usr), config_data.get("logs")
         
     logs_string = format_logs_counter(logs)
-    dirs = f"logs/{usr}/{model_name}/{logs_string}"
+
+    large_models = config.get_models(True, False, False)
+    medium_models = config.get_models(False, True, False)
+    small_models = config.get_models(False, False, True)
+
+    if model_name in large_models:
+         model_size = "large"
+    elif model_name in medium_models:
+         model_size = "medium"
+    elif model_name in small_models:
+         model_size = "small"
+
+    dirs = f"logs/{usr}/{prompt_type}/{model_size}/{model_name}/{logs_string}"
     os.makedirs(dirs, exist_ok=True)
 
     time = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")

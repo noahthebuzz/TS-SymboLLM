@@ -165,19 +165,34 @@ def read_all_prompts() -> list[tuple[str, str, dict, str]] | None:
     return prompts
 
 
-def get_all_prompt_paths() -> list[str]:
+def get_all_prompt_paths_with_descriptions() -> list[str]:
     '''
     Returns
     -------
     list : str
         list of paths to all prompt files
     '''
-    paths = []
+    paths, descriptions = [],[]
     for root, dirs, files in os.walk('prompts'):
         for file in files:
             path = os.path.join(root, file)
             paths.append(path)
-    return paths
+            if "random" in path:
+                descriptions.append("random")
+            elif "sequence" in path:
+                if "even" in path:
+                    descriptions.append("seq_even")
+                elif "odd" in path:
+                    descriptions.append("seq_odd")
+                elif "oscharm" in path:
+                    descriptions.append("seq_osc_harm")
+                elif "prime" in path:
+                    descriptions.append("seq_prime")
+                elif "squared" in path:
+                    descriptions.append("seq_x^2")
+            elif "temperature" in path:
+                descriptions.append("tempdata")
+    return paths, descriptions
 
 
 if __name__ == "__main__":

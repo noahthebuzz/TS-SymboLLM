@@ -53,18 +53,20 @@ def main():
         funcllama.pull_ollama_model(model=model)
 
     params = config.get_ollama_params(isRational=True)
+    
+    prompt_paths, prompt_descriptions = config.get_all_prompt_paths_with_descriptions()
 
     for model in models:
         print(f"\nTesting model: {model}\n")
-        prompt_paths = config.get_all_prompt_paths()
         for i in range(len(prompt_paths)):
             start_time = time.time()
             prompt_path = prompt_paths[i]
+            description = prompt_descriptions[i]
             prompt = generate_prompt(prompt_path)
             response = funcllama.generate_response(model=model, prompt=prompt, params=params)
             response_string = funcllama.print_response(response)
             execution_time = time.time() - start_time
-            logger.log(model_name=model, ollama_params=params, prompt=prompt, response=response_string, execution_time=execution_time)
+            logger.log(model_name=model, ollama_params=params, prompt_type=description, prompt=prompt, response=response_string, execution_time=execution_time)
     increase_logs_counter()
             
 
