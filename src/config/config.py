@@ -165,7 +165,7 @@ def read_all_prompts() -> list[tuple[str, str, dict, str]] | None:
     return prompts
 
 
-def get_all_prompt_paths_with_descriptions() -> list[str]:
+def get_all_prompt_paths_with_descriptions(subfolder: str = "single") -> list[str]:
     '''
     Returns
     -------
@@ -173,7 +173,7 @@ def get_all_prompt_paths_with_descriptions() -> list[str]:
         list of paths to all prompt files
     '''
     paths, descriptions = [],[]
-    for root, dirs, files in os.walk('prompts'):
+    for root, dirs, files in os.walk(f'prompts{"/" + subfolder}'):
         for file in files:
             path = os.path.join(root, file)
             paths.append(path)

@@ -57,7 +57,7 @@ def main():
 
     params = config.get_ollama_params(isRational=True)
     
-    prompt_paths, prompt_descriptions = config.get_all_prompt_paths_with_descriptions()
+    prompt_paths, prompt_descriptions = config.get_all_single_prompt_paths_with_descriptions()
 
     for model in models:
         print(f"\nTesting model: {model}\n")
