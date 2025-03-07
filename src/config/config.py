@@ -192,6 +192,8 @@ def get_all_prompt_paths_with_descriptions(subfolder: str = "single") -> list[st
                     descriptions.append("seq_x^2")
             elif "temperature" in path:
                 descriptions.append("tempdata")
+            elif "and" in path:
+                descriptions.append("multi")
     return paths, descriptions
 
 

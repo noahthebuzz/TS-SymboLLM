@@ -9,7 +9,7 @@ import time
 import os
 
 
-def generate_data(random: bool = False, temperature: bool = False, sequence: bool = False):
+def generate_data(random: bool = False, temperature: bool = False, sequence: bool = False, multi_tsd: bool = False):
     if random:
         data = {"data": generate_tsd(kind_of_data="random", n_instances=np.random.randint(low=1, high=101), interval_sec=60)}
         config.write_json(data=data, path="prompts/random_test.json", overwrite=False)
@@ -26,6 +26,12 @@ def generate_data(random: bool = False, temperature: bool = False, sequence: boo
             desired_output = {"desired_output": "Return a list containing the complete numerical sequence, including the missing values in their correct positions. Do not include any additional commentary, only the reconstructed sequence. Also return a list containing the timestamps of every single value."}
             data = {"data": generate_tsd(kind_of_data="sequence", n_instances=10, interval_sec=3, sequence=i), **task, **additional_context, **desired_output}
             config.write_json(data=data, path=f"prompts/sequence_{['even', 'odd', 'squared', 'oscharm', 'prime'][i]}_test.json", overwrite=False)
+
+    if multi_tsd:
+        # Temperature data and capacity data
+        temp_data, cap_data = generate_tsd(kind_of_data="cpu_temp_and_cap", n_instances=(5*60), interval_sec=1)
+        data = {"temperature_data": temp_data, "capacity_data": cap_data}
+        config.write_json(data=data, path="prompts/multi/cpu_temp_and_cap_test.json", overwrite=False)
 
 
 def generate_prompt(path: str) -> str:
@@ -57,7 +63,7 @@ def main():
 
     params = config.get_ollama_params(isRational=True)
     
-    prompt_paths, prompt_descriptions = config.get_all_single_prompt_paths_with_descriptions()
+    prompt_paths, prompt_descriptions = config.get_all_prompt_paths_with_descriptions("multi")
 
     for model in models:
         print(f"\nTesting model: {model}\n")
@@ -78,5 +84,5 @@ if __name__ == "__main__":
         main()
         #generate_data(random=False, temperature=False, sequence=True)
     else:
-        generate_data(random=False, temperature=False, sequence=True)
+        generate_data(random=False, temperature=False, sequence=False, multi_tsd=True)
         #funcllama.chat(model="qwen2.5:3b", params=config.get_ollama_params(isRational=True))
