@@ -149,6 +149,7 @@ def read_prompt(path: str, multi: bool = False) -> tuple[str, dict, str, str] | 
             return task, data, context, output 
         else:
             task, data1, data2, context, output = data.get("task"), data.get("data1"), data.get("data2"), data.get("additional_context"), data.get("desired_output")
+            print(f"[path={path}]\nTask: {task}\nData1: {data1}\nData2: {data2}\nContext: {context}\nOutput: {output}\n")
             return task, data1, data2, context, output
     else:
         return None
