@@ -39,7 +39,7 @@ def generate_prompt(path: str, multi: bool = False) -> str:
         task, data, context, output = config.read_prompt(path=path)
         return f"Task:\n{task}\nData:\n{data}\nAdditional context:\n{context}\nDesired output format:\n{output}\n"
     else:
-        task, data1, data2, context, output = config.read_prompt(path=path)
+        task, data1, data2, context, output = config.read_prompt(path=path, multi=True)
         return f"Task:\n{task}\nData1:\n{data1}\nData2:\n{data2}\nAdditional context:\n{context}\nDesired output format:\n{output}\n"
 
 

@@ -128,7 +128,7 @@ def get_ollama_params(isRational: bool) -> dict:
         return get_config_content(ollama_param="creative").get("params")
 
     
-def read_prompt(path: str, multi: bool = False) -> tuple[str, dict, str] | None:
+def read_prompt(path: str, multi: bool = False) -> tuple[str, dict, str, str] | tuple[str, dict, dict, str, str] | None:
     '''
     Parameters
     ----------
@@ -138,7 +138,8 @@ def read_prompt(path: str, multi: bool = False) -> tuple[str, dict, str] | None:
     Returns
     -------
     tuple : str, dict, str | None
-        contains (instruction, data, tasks)
+        contains (task, data, context, output)
+        or       (task, data1, data2, conext, output)
     '''
     data = read_json(path=path)
     if data:
@@ -148,6 +149,7 @@ def read_prompt(path: str, multi: bool = False) -> tuple[str, dict, str] | None:
             return task, data, context, output 
         else:
             task, data1, data2, context, output = data.get("task"), data.get("data1"), data.get("data2"), data.get("additional_context"), data.get("desired_output")
+            return task, data1, data2, context, output
     else:
         return None
     
