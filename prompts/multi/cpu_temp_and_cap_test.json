@@ -603,7 +603,7 @@
         "14:28:37": 28.98180911178455,
         "14:28:38": 36.67948247920572
     },
-    "task": "Analyze the temperature time-series data of a specific processor. Identify trends, anomalies and potential patterns in the temperature behaviour over time. Take the processor capacity data into account.",
-    "additional_context": "The data represents recorded temperature and capacity data of the last five minutes of a processor. The temperature data is in degrees Celsius and the capacity data is in percentage. The data is recorded every second.",
+    "task": "Analyze the temperature time-series data of the specified processor. Identify trends, anomalies and potential patterns in the temperature behaviour over time. Take the processor capacity data into account.",
+    "additional_context": "Data1 represents the temperature and Data2 the capacity data of the last five minutes of the processor. The temperature data is in degrees Celsius and the capacity data is in percentage. The data is recorded every second.",
     "desired_output": "Provide an analysis of the temperature trends and patterns. Highlight any anomalies, possible causes, and recommendations for maintaining optimal processor temperature. The response should be structured, starting with key observations, followed by explanations, and concluding with potential actions or recommendations."
 }

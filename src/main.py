@@ -30,13 +30,17 @@ def generate_data(random: bool = False, temperature: bool = False, sequence: boo
     if multi_tsd:
         # Temperature data and capacity data
         temp_data, cap_data = generate_tsd(kind_of_data="cpu_temp_and_cap", n_instances=(5*60), interval_sec=1)
-        data = {"temperature_data": temp_data, "capacity_data": cap_data}
+        data = {"data1": temp_data, "data2": cap_data}
         config.write_json(data=data, path="prompts/multi/cpu_temp_and_cap_test.json", overwrite=False)
 
 
-def generate_prompt(path: str) -> str:
-    task, data, context, output = config.read_prompt(path=path)
-    return f"Task:\n{task}\nData:\n{data}\nAdditional context:\n{context}\nDesired output format:\n{output}\n"
+def generate_prompt(path: str, multi: bool = False) -> str:
+    if not multi:
+        task, data, context, output = config.read_prompt(path=path)
+        return f"Task:\n{task}\nData:\n{data}\nAdditional context:\n{context}\nDesired output format:\n{output}\n"
+    else:
+        task, data1, data2, context, output = config.read_prompt(path=path)
+        return f"Task:\n{task}\nData1:\n{data1}\nData2:\n{data2}\nAdditional context:\n{context}\nDesired output format:\n{output}\n"
 
 
 def increase_logs_counter():
@@ -45,7 +49,7 @@ def increase_logs_counter():
     config.write_json(data={"logs": logs}, path="src/config/config.json", overwrite=False)
 
 
-def main():
+def main(test_multi: bool):
 
     # Determine the models to test based on the user
     models = []
@@ -63,7 +67,7 @@ def main():
 
     params = config.get_ollama_params(isRational=True)
     
-    prompt_paths, prompt_descriptions = config.get_all_prompt_paths_with_descriptions("multi")
+    prompt_paths, prompt_descriptions = config.get_all_prompt_paths_with_descriptions("multi" if test_multi else "single")
 
     for model in models:
         print(f"\nTesting model: {model}\n")
@@ -71,7 +75,7 @@ def main():
             start_time = time.time()
             prompt_path = prompt_paths[i]
             description = prompt_descriptions[i]
-            prompt = generate_prompt(prompt_path)
+            prompt = generate_prompt(prompt_path, multi=test_multi)
             response = funcllama.generate_response(model=model, prompt=prompt, params=params)
             response_string = funcllama.print_response(response)
             execution_time = time.time() - start_time
@@ -81,8 +85,8 @@ def main():
 
 if __name__ == "__main__":
     if os.getlogin() == "dbisai":
-        main()
-        #generate_data(random=False, temperature=False, sequence=True)
+        generate_data(random=False, temperature=False, sequence=False, multi_tsd=True)
+        main(test_multi=True)
     else:
         generate_data(random=False, temperature=False, sequence=False, multi_tsd=True)
         #funcllama.chat(model="qwen2.5:3b", params=config.get_ollama_params(isRational=True))
