@@ -143,14 +143,3 @@ def chat(model: str, params: dict) -> str:
 
         else:
             print('No tool calls returned from model')
-        
-        """print(f"\n[AI]:")
-        content = ''
-        for part in response:
-            content += part['message']['content']
-            print(part['message']['content'], end='', flush=True)
-
-        messages += [{'role': 'user', 'content': user_input},
-                     {'role': 'assistant', 'content': content}]
-        
-        print("\n\n[MESSAGES]:", messages)"""

@@ -14,7 +14,7 @@ def format_logs_counter(counter: int) -> str:
 
 def log(model_name: str, ollama_params: dict, prompt_type: str, prompt: str, response: str, execution_time: float, test: bool = False):
     usr = determine_usr()
-    config_data = config.get_config_content(setup_usr=usr, logs=True)
+    config_data = config._get_config_content(setup_usr=usr, logs=True)
 
     if config_data is None:
         usr_setup, logs = None, 0

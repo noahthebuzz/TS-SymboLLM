@@ -1,10 +1,21 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
-import ollama
-from ollama import GenerateResponse
 
 
+##########################################################
+### PLOT FUNCTIONS
+##########################################################
+
+# TODO:
+# Single TSD Plot
+# Multi TSD Plot
+# Multi TSD Plot with each TSD in a separate subplot
+# Multi TSD Plot with each TSD in a separate subplot and a shared y-axis
+def single_tsd_plot(data: dict, title: str, xlabel: str, ylabel: str, save: bool = False, location: str = "./plots"):
+    None
+
+# TODO: Remove
 def plot_tsd(data: dict, title: str, xlabel: str, ylabel: str, save: bool = False, show: bool = False):
     fig, ax = plt.subplots(figsize=(15, 7))
     ax.plot(data.keys(), data.values(), marker='o', color='b')
@@ -24,11 +35,6 @@ def plot_tsd(data: dict, title: str, xlabel: str, ylabel: str, save: bool = Fals
         time = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
         title = title.replace(" ", "_")
         plt.savefig(f"./plots/{title}.png")
-    
-    if show:
-        plt.show()
-    else:
-        plt.close()
 
 
 def plot_multi_tsd(data1: dict, data2:dict, title: str, xlabel: str, ylabel: str, save: bool = False, show: bool = False):
@@ -193,24 +199,3 @@ def generate_tsd(kind_of_data: str, n_instances: int, interval_sec: int, sequenc
         return temp_data, cap_data
 
     return tsd
-
-
-def pull_model_from_ollama(model: str) -> bool:
-    try:
-        response = ollama.pull(model=model, store=True)
-        progress_states = set()
-        for progress in response:
-            if progress.get('status') in progress_states:
-                continue
-            progress_states.add(progress.get('status'))
-            print(progress.get('status'))
-        print("\nModel pulled successfully.\n")
-        return True
-    except Exception as e:
-        print(f"Error: {e}")
-        return False
-
-
-
-if __name__ == "__main__":
-    None

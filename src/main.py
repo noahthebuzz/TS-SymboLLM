@@ -3,7 +3,7 @@
 import utils.funcllama as funcllama
 import numpy as np
 from config import config
-from utils.helpers import generate_tsd, plot_tsd
+from utils.data_gen import generate_tsd, plot_tsd
 import logger
 import time
 import os
@@ -44,7 +44,7 @@ def generate_prompt(path: str, multi: bool = False) -> str:
 
 
 def increase_logs_counter():
-    logs = config.get_config_content(logs=True).get("logs")
+    logs = config._get_config_content(logs=True).get("logs")
     logs += 1
     config.write_json(data={"logs": logs}, path="src/config/config.json", overwrite=False)
 
@@ -65,7 +65,7 @@ def main(test_multi: bool):
     for model in models:
         funcllama.pull_ollama_model(model=model)
 
-    params = config.get_ollama_params(isRational=True)
+    params = config.get_ollama_parameter(isRational=True)
     
     prompt_paths, prompt_descriptions = config.get_all_prompt_paths_with_descriptions("multi" if test_multi else "single")
 
@@ -87,6 +87,8 @@ if __name__ == "__main__":
     if os.getlogin() == "dbisai":
         generate_data(random=False, temperature=False, sequence=False, multi_tsd=True)
         main(test_multi=True)
+        #config.read_all_prompts()
     else:
-        generate_data(random=False, temperature=False, sequence=False, multi_tsd=True)
+        #generate_data(random=False, temperature=False, sequence=False, multi_tsd=True)
         #funcllama.chat(model="qwen2.5:3b", params=config.get_ollama_params(isRational=True))
+        config.read_all_prompts()
