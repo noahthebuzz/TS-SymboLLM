@@ -17,31 +17,35 @@ from datetime import datetime
 def _generate_random_data():
     raw_path = "prompts/single/float/"
     rounded_path = "prompts/single/integer/"
-    filename = "random_test.json"
+    filename = "random"
     datasets = datagen.generate_random_tsd(n_instances=np.random.randint(low=1, high=101), interval_sec=60)
     raw_data, rounded_data = {"data": datasets[0]}, {"data": datasets[1]}
-    config.write_prompt_json(data=raw_data    , path=raw_path + filename)
-    config.write_prompt_json(data=rounded_data, path=rounded_path + filename)
+    # TODO plot data -> filename
+    config.write_prompt_json(data=raw_data    , path=raw_path + filename + "_test.json")
+    config.write_prompt_json(data=rounded_data, path=rounded_path + filename + "_test.json")
 
 def _generate_temperature_data():
     raw_path = "prompts/single/float/"
     rounded_path = "prompts/single/integer/"
-    filename = "temperature_test.json"
+    filename = "temperature"
     datasets = datagen.generate_temperature_tsd(n_instances=300, interval_sec=1)
     raw_data, rounded_data = {"data": datasets[0]}, {"data": datasets[1]}
-    config.write_prompt_json(data=raw_data    , path=raw_path + filename)
-    config.write_prompt_json(data=rounded_data, path=rounded_path + filename)
+    # TODO plot data -> filename
+    config.write_prompt_json(data=raw_data    , path=raw_path + filename + "_test.json")
+    config.write_prompt_json(data=rounded_data, path=rounded_path + filename + "_test.json")
 
 def _generate_sequence_data():
-    dir, name, ending = "prompts/single/", "sequence_", "_test.json"
+    dir, name = "prompts/single/", "sequence_"
     # 0: even numbers, 1: odd numbers, 2: squared numbers, 3: oscillating harmonic numbers, 4: prime numbers
     sequences = ['even', 'odd', 'squared', 'harmosc', 'prime']
-    paths = ['integer', 'integer', 'integer', 'float', 'integer']
+    paths = ['integer/', 'integer/', 'integer/', 'float/', 'integer/']
     path = ""
     for i in range(5):
-        path = f"{dir}{paths[i]}{name}{sequences[i]}{ending}"
+        filename = f"{name}{sequences[i]}"
+        path = f"{dir}{paths[i]}{filename}_test.json"
         datasets = datagen.generate_sequence_tsd(n_instances=10, interval_sec=3, sequence=i)
         data = {"data": datasets}
+        # TODO plot data -> filename
         config.write_prompt_json(data=data, path=path)
 
 def _generate_multi_tsd_data():
@@ -50,8 +54,11 @@ def _generate_multi_tsd_data():
     cap_data = datagen.generate_capacity_tsd(n_instances=n_instances, interval_sec=interval_sec, time=time)
     raw_data = {"data1": temp_data[0], "data2": cap_data[0]}
     rounded_data = {"data1": temp_data[1], "data2": cap_data[1]}
-    config.write_prompt_json(data=raw_data    , path="prompts/multi/float/cpu_temp_and_cap_test.json")
-    config.write_prompt_json(data=rounded_data, path="prompts/multi/integer/cpu_temp_and_cap_test.json")
+    paths = ["prompts/multi/float/", "prompts/multi/integer/"]
+    filename = "cpu_temp_and_cap"
+    # TODO plot data -> filename
+    config.write_prompt_json(data=raw_data    , path=f"{paths[0]}{filename}_test.json")
+    config.write_prompt_json(data=rounded_data, path=f"{paths[1]}{filename}_test.json")
     
 
 def generate_data(random: bool = False, temperature: bool = False, sequence: bool = False, multi_tsd: bool = False):

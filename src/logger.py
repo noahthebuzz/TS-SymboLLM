@@ -12,8 +12,8 @@ def format_logs_counter(counter: int) -> str:
     counter = str(counter)
     return '0' * (6 - len(counter)) + counter
 
-# TODO insert data_representation
-def log(model_name: str, ollama_params: dict, prompt_type: str, prompt: str, response: str, execution_time: float, test: bool = False):
+
+def log(model_name: str, ollama_params: dict, prompt_type: str, data_representation: str, prompt: str, response: str, execution_time: float, test: bool = False):
     usr = determine_usr()
     config_data = config._get_config_content(setup_usr=usr, logs=True)
 
@@ -72,6 +72,8 @@ def log(model_name: str, ollama_params: dict, prompt_type: str, prompt: str, res
                     log_file.write(f"GPU: {usr_setup['GPU']}\n")
                     log_file.write(f"OS: {usr_setup['OS']}\n\n")
                     log_file.write(f"-------------------------------------------\n\n")
+                log_file.write(f"Representation/Form of Data: {data_representation}\n")
+                log_file.write(f"-------------------------------------------\n\n")
                 log_file.write(f"Prompt:\n{prompt}\n\n")
                 log_file.write(f"-------------------------------------------\n\n")
                 log_file.write(f"Answer:\n{response}\n\n")
