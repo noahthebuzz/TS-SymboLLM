@@ -1,27 +1,33 @@
 {
-    "data": {
-        "13:32:20": 95,
-        "13:33:20": 90,
-        "13:34:20": 36,
-        "13:35:20": 62,
-        "13:36:20": 21,
-        "13:37:20": 76,
-        "13:38:20": 63,
-        "13:39:20": 7,
-        "13:40:20": 81,
-        "13:41:20": 98,
-        "13:42:20": 60,
-        "13:43:20": 45,
-        "13:44:20": 69,
-        "13:45:20": 19,
-        "13:46:20": 20,
-        "13:47:20": 63,
-        "13:48:20": 19,
-        "13:49:20": 41,
-        "13:50:20": 15,
-        "13:51:20": 23
+    "prompt": {
+        "data": {
+            "13:32:20": 95,
+            "13:33:20": 90,
+            "13:34:20": 36,
+            "13:35:20": 62,
+            "13:36:20": 21,
+            "13:37:20": 76,
+            "13:38:20": 63,
+            "13:39:20": 7,
+            "13:40:20": 81,
+            "13:41:20": 98,
+            "13:42:20": 60,
+            "13:43:20": 45,
+            "13:44:20": 69,
+            "13:45:20": 19,
+            "13:46:20": 20,
+            "13:47:20": 63,
+            "13:48:20": 19,
+            "13:49:20": 41,
+            "13:50:20": 15,
+            "13:51:20": 23
+        },
+        "task": "Analyze the given time-series data, identify any trends, patterns, or anomalies, and provide insights into the nature of the dataset.",
+        "additional_context": "The data set consists of time series data recorded once per minute. The origin of the data is not known, so try to provide a neutral interpretation.",
+        "desired_output": "Provide a structured and time-based analysis of the time series data. Find trends, fluctuations or anomalies."
     },
-    "task": "Analyze the given time-series data, identify any trends, patterns, or anomalies, and provide insights into the nature of the dataset.",
-    "additional_context": "The dataset consists of random time-series values recorded at regular intervals. The nature of the data is unknown, meaning it could represent sensor readings, financial data, or other time-dependent measurements. Your goal is to analyze the dataset, determine if there are any visible trends, periodicity, outliers, or patterns, and provide insights based on the observed values.",
-    "desired_output": "Provide a structured analysis of the time-series data. Identify any trends, fluctuations, or anomalies. If applicable, suggest potential sources or causes of variation. The response should include key observations, an explanation of any detected patterns, and possible real-world interpretations of the dataset."
+    "prompt_info": {
+        "description": "random",
+        "level": "single"
+    }
 }

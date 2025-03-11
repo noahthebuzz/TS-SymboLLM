@@ -1,23 +1,23 @@
 {
     "prompt": {
         "data": {
-            "14:43:01": 2,
-            "14:43:04": 7,
-            "14:43:07": 17,
-            "14:43:10": 29,
-            "14:43:13": 41,
-            "14:43:16": 53,
-            "14:43:19": 67,
-            "14:43:22": 79,
-            "14:43:25": 97,
-            "14:43:28": 107
+            "14:43:01": -1.0,
+            "14:43:04": 0.25,
+            "14:43:07": -0.14,
+            "14:43:10": 0.1,
+            "14:43:13": -0.08,
+            "14:43:16": 0.06,
+            "14:43:19": -0.05,
+            "14:43:22": 0.05,
+            "14:43:25": -0.04,
+            "14:43:28": 0.04
         },
         "task": "Identify the underlying pattern of the following number series.",
         "data_context": "The data only consists of every third value of the number series. Your goal is to infer the rule governing the sequence and reconstruct the full set of numbers.",
         "desired_output": "Complete the series, with matching timestamps, and return a Python Dictionairy with the complete series of numbers and timestamps."
     },
     "prompt_info": {
-        "description": "sequence_prime",
+        "description": "sequence_harmosc",
         "level": "single"
     }
 }

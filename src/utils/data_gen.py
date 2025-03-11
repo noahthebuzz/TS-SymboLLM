@@ -94,6 +94,7 @@ def generate_temperature_data(n_data_points: int, start_temp: float, stable_devi
         return temperature_data.round().tolist()
     return temperature_data.tolist()
 
+
 def generate_capacity_data(n_data_points: int, start_capacity: float, stable_deviation: float, jump_start: int, jump_capacity:float, jump_deviation: float, decrease_start: int, final_capacity: float, rounded_values: bool = False) -> list[int]:
     # 0. Ruhige Phase
     ruhige_phase = np.random.normal(loc=start_capacity, scale=stable_deviation, size=jump_start)

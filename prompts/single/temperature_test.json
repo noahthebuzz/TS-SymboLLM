@@ -1,5 +1,6 @@
 {
-    "data": {
+    "prompt": {
+        "data": {
         "13:32:20": 49.0,
         "13:32:30": 49.0,
         "13:32:40": 51.0,
@@ -360,8 +361,13 @@
         "14:31:50": 96.0,
         "14:32:00": 98.0,
         "14:32:10": 95.0
+        },
+        "task": "Analyze the following temperature time series data of a processor. Refer to the time over which the data was recorded.",
+        "data_context": "The data was measured at 1 second intervals over a 5 minute period. This makes a total of 300 data points.",
+        "desired_output": "Provide an analysis of the temperature trends and patterns. The response should be structured, starting with key observations, followed by explanations, and concluding with potential actions or recommendations to maintain optimal processor temperature."
     },
-    "task": "Analyze the temperature time-series data of a specific processor. Identify trends, anomalies, and potential patterns in the temperature behavior over time.",
-    "additional_context": "The data represents recorded temperature values of a processor every 10 seconds. The goal is to determine if there are any significant trends (e.g., rising/falling temperature), sudden spikes, cyclical patterns, or anomalies that could indicate potential issues such as overheating or unstable thermal performance.",
-    "desired_output": "Provide an analysis of the temperature trends and patterns. Highlight any anomalies, possible causes, and recommendations for maintaining optimal processor temperature. The response should be structured, starting with key observations, followed by explanations, and concluding with potential actions or recommendations."
+    "prompt_info": {
+        "description": "temp_single",
+        "level": "single"
+    }
 }

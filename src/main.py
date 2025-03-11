@@ -12,11 +12,11 @@ import os
 def generate_data(random: bool = False, temperature: bool = False, sequence: bool = False, multi_tsd: bool = False):
     if random:
         data = {"data": generate_tsd(kind_of_data="random", n_instances=np.random.randint(low=1, high=101), interval_sec=60)}
-        config.write_json(data=data, path="prompts/random_test.json", overwrite=False)
+        config.write_prompt_json(data=data, path="prompts/random_test.json")
 
     if temperature:
         data = {"data": generate_tsd(kind_of_data="temperature", n_instances=360, interval_sec=10)}
-        config.write_json(data=data, path="prompts/temperature_test.json", overwrite=False)
+        config.write_prompt_json(data=data, path="prompts/temperature_test.json")
 
     if sequence:
         for i in range(5):
@@ -25,31 +25,31 @@ def generate_data(random: bool = False, temperature: bool = False, sequence: boo
             additional_context = {"additional_context": "The given data represents every third value of a complete numerical sequence. The missing values between the given numbers follow the same underlying pattern. Your goal is to infer the rule governing the sequence and reconstruct the full set of numbers."}
             desired_output = {"desired_output": "Return a list containing the complete numerical sequence, including the missing values in their correct positions. Do not include any additional commentary, only the reconstructed sequence. Also return a list containing the timestamps of every single value."}
             data = {"data": generate_tsd(kind_of_data="sequence", n_instances=10, interval_sec=3, sequence=i), **task, **additional_context, **desired_output}
-            config.write_json(data=data, path=f"prompts/sequence_{['even', 'odd', 'squared', 'oscharm', 'prime'][i]}_test.json", overwrite=False)
+            config.write_prompt_json(data=data, path=f"prompts/sequence_{['even', 'odd', 'squared', 'oscharm', 'prime'][i]}_test.json")
 
     if multi_tsd:
         # Temperature data and capacity data
         temp_data, cap_data = generate_tsd(kind_of_data="cpu_temp_and_cap", n_instances=(5*60), interval_sec=1)
         data = {"data1": temp_data, "data2": cap_data}
-        config.write_json(data=data, path="prompts/multi/cpu_temp_and_cap_test.json", overwrite=False)
+        config.write_prompt_json(data=data, path="prompts/multi/cpu_temp_and_cap_test.json")
 
 
-def generate_prompt(path: str, multi: bool = False) -> str:
-    if not multi:
-        task, data, context, output = config.read_prompt(path=path)
-        return f"Task:\n{task}\nData:\n{data}\nAdditional context:\n{context}\nDesired output format:\n{output}\n"
+def generate_prompt(path: str, level: str) -> tuple[str, str]:
+    if level == "single":
+        task, context, data, output = config.read_prompt(path=path)
+        return f"Task:\n{task}\nData context:\n{context}\nData:\n{data}\nDesired output format:\n{output}\n"
     else:
-        task, data1, data2, context, output = config.read_prompt(path=path, multi=True)
-        return f"Task:\n{task}\nData1:\n{data1}\nData2:\n{data2}\nAdditional context:\n{context}\nDesired output format:\n{output}\n"
+        task, context_1, data_1, context_2, data_2, output = config.read_prompt(path=path)
+        return f"Task:\n{task}\nData 1 context:\n{context_1}\nData 1:\n{data_1}\nData 2 context:\n{context_2}\nData 2:\n{data_2}\nDesired output format:\n{output}\n"
 
 
 def increase_logs_counter():
     logs = config._get_config_content(logs=True).get("logs")
     logs += 1
-    config.write_json(data={"logs": logs}, path="src/config/config.json", overwrite=False)
+    config.write_json(data={"logs": logs}, path="src/config/config.json")
 
 
-def main(test_multi: bool):
+def main():
 
     # Determine the models to test based on the user
     models = []
@@ -67,15 +67,14 @@ def main(test_multi: bool):
 
     params = config.get_ollama_parameter(isRational=True)
     
-    prompt_paths, prompt_descriptions = config.get_all_prompt_paths_with_descriptions("multi" if test_multi else "single")
+    prompt_paths = config.get_prompt_paths()
 
     for model in models:
         print(f"\nTesting model: {model}\n")
-        for i in range(len(prompt_paths)):
+        for path in prompt_paths:
             start_time = time.time()
-            prompt_path = prompt_paths[i]
-            description = prompt_descriptions[i]
-            prompt = generate_prompt(prompt_path, multi=test_multi)
+            description, level = config.read_prompt_description_and_level(path=path)
+            prompt = generate_prompt(path, level=level)
             response = funcllama.generate_response(model=model, prompt=prompt, params=params)
             response_string = funcllama.print_response(response)
             execution_time = time.time() - start_time
@@ -91,4 +90,7 @@ if __name__ == "__main__":
     else:
         #generate_data(random=False, temperature=False, sequence=False, multi_tsd=True)
         #funcllama.chat(model="qwen2.5:3b", params=config.get_ollama_params(isRational=True))
-        config.read_all_prompts()
+        paths = config.get_prompt_paths()
+        for path in paths:
+            print(f"[DEBUG]: {path}")
+            config.read_prompt(path=path)
