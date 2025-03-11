@@ -28,6 +28,7 @@
     },
     "prompt_info": {
         "description": "random",
-        "level": "single"
+        "level": "single",
+        "representation": "rounded"
     }
 }

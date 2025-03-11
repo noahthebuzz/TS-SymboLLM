@@ -611,6 +611,7 @@
     },
     "prompt_info": {
         "description": "cpu_temp_load",
-        "level": "multi"
+        "level": "multi",
+        "representation": "raw"
     }
 }

@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 
 
+
 ##########################################################
 ### PLOT FUNCTIONS
 ##########################################################
@@ -68,15 +69,34 @@ def plot_multi_tsd(data1: dict, data2:dict, title: str, xlabel: str, ylabel: str
         plt.close()
 
 
-def generate_time_instances(start_time: datetime, interval_sec: int, n_instances: int) -> list[str]:
+##########################################################
+### TIME INSTANCE GENERATION FUNCTION
+##########################################################
+
+def _generate_time_instances(start_time: datetime, interval_sec: int, n_instances: int) -> list[str]:
     return [(start_time + timedelta(seconds=interval_sec * i)).strftime("%H:%M:%S") for i in range(n_instances)]
 
 
-def generate_random_data(min_value: int, max_value: int, n_instances: int) -> list[int]:
-    return np.random.randint(min_value, max_value, n_instances).tolist()
+##########################################################
+### DATA GENERATION FUNCTIONS
+##########################################################
 
+def _generate_random_data(min_value: float, max_value: float, n_instances: int) -> list[float]:
+    return np.random.uniform(min_value, max_value, n_instances)
 
-def generate_temperature_data(n_data_points: int, start_temp: float, stable_deviation: float , unstable_start: int, unstable_deviation: float, expo_increase_start: int, final_temp: float, rounded_values: bool = False) -> list[int]:
+def generate_random_tsd(n_instances: int, interval_sec: int) -> list[dict[str, int]]:
+    timestamps = _generate_time_instances(datetime.now(), interval_sec, n_instances)
+    data = _generate_random_data(0, 100, n_instances)
+    tsd = dict(zip(timestamps, data))
+    rounded_data = list(np.around(data, 0))
+    tsd2 = dict(zip(timestamps, rounded_data))
+    # TODO implement plot_tsd
+    #plot_tsd(tsd, "Random Data", "Time (HH:MM:SS)", "Value (int)", save=True, show=False)
+    return [tsd, tsd2]
+
+###########################################################
+
+def _generate_temperature_data(n_data_points: int, start_temp: float, stable_deviation: float , unstable_start: int, unstable_deviation: float, expo_increase_start: int, final_temp: float) -> list[float]:
     # 0. Ruhige Phase
     ruhige_phase = np.random.normal(loc=start_temp, scale=stable_deviation, size=unstable_start)
 
@@ -90,12 +110,27 @@ def generate_temperature_data(n_data_points: int, start_temp: float, stable_devi
     # 3. Kombinieren der Daten
     temperature_data = np.concatenate([ruhige_phase, unstable_phase, increase_phase])
 
-    if rounded_values:
-        return temperature_data.round().tolist()
     return temperature_data.tolist()
 
+def generate_temperature_tsd(n_instances: int, interval_sec: int, time: datetime = datetime.now()) -> list[dict]:
+    timestamps = _generate_time_instances(time, interval_sec, n_instances)
+    data = _generate_temperature_data(
+            n_data_points=n_instances, 
+            start_temp=50, 
+            stable_deviation=0.75, 
+            unstable_start=round(n_instances//2.5), 
+            unstable_deviation=3.5, 
+            expo_increase_start=round(n_instances//1.75), 
+            final_temp=95)
+    tsd = dict(zip(timestamps, data))
+    rounded_data = list(np.around(data, 0))
+    tsd2 = dict(zip(timestamps, rounded_data))
+    # TODO implement plot_tsd
+    return [tsd, tsd2]
 
-def generate_capacity_data(n_data_points: int, start_capacity: float, stable_deviation: float, jump_start: int, jump_capacity:float, jump_deviation: float, decrease_start: int, final_capacity: float, rounded_values: bool = False) -> list[int]:
+###########################################################
+
+def _generate_capacity_data(n_data_points: int, start_capacity: float, stable_deviation: float, jump_start: int, jump_capacity:float, jump_deviation: float, decrease_start: int, final_capacity: float) -> list[float]:
     # 0. Ruhige Phase
     ruhige_phase = np.random.normal(loc=start_capacity, scale=stable_deviation, size=jump_start)
 
@@ -109,12 +144,29 @@ def generate_capacity_data(n_data_points: int, start_capacity: float, stable_dev
     # 3. Kombinieren der Daten
     capacity_data = np.concatenate([ruhige_phase, jump_phase, decrease_phase])
 
-    if rounded_values:
-        return capacity_data.round().tolist()
     return capacity_data.tolist()
 
+def generate_capacity_tsd(n_instances: int, interval_sec: int, time: datetime = datetime.now()) -> list[dict]:
+    timestamps = _generate_time_instances(time, interval_sec, n_instances)
+    data = _generate_capacity_data(
+                n_data_points=n_instances,
+                start_capacity=30,
+                stable_deviation=2.0,
+                jump_start=round(n_instances//2.5),
+                jump_capacity=75,
+                jump_deviation=3.5,
+                decrease_start=round(n_instances//2.125),
+                final_capacity=30,
+    )
+    tsd = dict(zip(timestamps, data))
+    rounded_data = list(np.around(data, 0))
+    tsd2 = dict(zip(timestamps, rounded_data))
+    # TODO implement plot_tsd
+    return [tsd, tsd2]
 
-def generate_sequence_data(n_instances: int,  type_of_sequence: int, every_n_th_number: int = 3) -> list[int]:    
+###########################################################
+
+def _generate_sequence_data(n_instances: int,  type_of_sequence: int, every_n_th_number: int = 3) -> list[int]:    
     if every_n_th_number < 1:
         every_n_th_number = 1
 
@@ -142,61 +194,13 @@ def generate_sequence_data(n_instances: int,  type_of_sequence: int, every_n_th_
                 primes.append(i)
             i += 1
         return [primes[i] for i in range(0, n_instances * every_n_th_number, every_n_th_number)]
-        
-
-def generate_tsd(kind_of_data: str, n_instances: int, interval_sec: int, sequence: int = 0) -> dict | tuple[dict, dict]:
-    start_time = datetime.now()
-    time_instances = generate_time_instances(start_time, interval_sec, n_instances)
-
-    data = []
-
-    if kind_of_data == "random":
-        data = generate_random_data(0, 100, n_instances)
-        tsd = dict(zip(time_instances, data))
-        plot_tsd(tsd, "Random Data", "Time (HH:MM:SS)", "Value (int)", save=True, show=False)
-
-    elif kind_of_data == "temperature": 
-        data = generate_temperature_data(
-                n_data_points=n_instances, 
-                start_temp=50, 
-                stable_deviation=0.75, 
-                unstable_start=round(n_instances//2.5), 
-                unstable_deviation=3.5, 
-                expo_increase_start=round(n_instances//1.75), 
-                final_temp=95, 
-                rounded_values=True)
-        tsd = dict(zip(time_instances, data))
-        plot_tsd(tsd, "Temperature Data of a Processor", "Time (HH:MM:SS)", "Temperature (°C)", save=True, show=False)
-
-    elif kind_of_data == "sequence":
-        data = generate_sequence_data(n_instances=n_instances, type_of_sequence=sequence)
-        tsd = dict(zip(time_instances, data))
-        plot_tsd(tsd, f"Sequence Data ({['even numbers', 'odd numbers', 'squared numbers', 'oscillating harmonic numbers', 'prime numbers'][sequence]})", "Time (HH:MM:SS)", "Value (int)", save=True, show=False)
-
-    elif kind_of_data == "cpu_temp_and_cap":
-        data1 = generate_temperature_data(
-                n_data_points=n_instances, 
-                start_temp=50, 
-                stable_deviation=0.75, 
-                unstable_start=round(n_instances//2.5), 
-                unstable_deviation=3.5, 
-                expo_increase_start=round(n_instances//1.75), 
-                final_temp=95, 
-                rounded_values=True)
-        temp_data = dict(zip(time_instances, data1))
-
-        data2 = generate_capacity_data(
-                n_data_points=n_instances,
-                start_capacity=30,
-                stable_deviation=2.0,
-                jump_start=round(n_instances//2.5),
-                jump_capacity=75,
-                jump_deviation=3.5,
-                decrease_start=round(n_instances//2.125),
-                final_capacity=30,
-        )
-        cap_data = dict(zip(time_instances, data2))
-        plot_multi_tsd(temp_data, cap_data, "Temperature and Capacity Data of a Processor", "Time (HH:MM:SS)", "Temperature (°C) / Capacity (%)", save=True, show=False)
-        return temp_data, cap_data
-
+    
+def generate_sequence_tsd(n_instances: int, interval_sec: int, sequence: int, time: datetime = datetime.now()) -> dict:
+    timestamps = _generate_time_instances(time, interval_sec, n_instances)
+    data = _generate_sequence_data(n_instances=n_instances, type_of_sequence=sequence)
+    tsd = dict(zip(timestamps, data))
+    # TODO implement plot_tsd
     return tsd
+        
+###########################################################
+

@@ -153,7 +153,7 @@ def read_prompt(path: str) -> tuple[str, str, str, dict, str] | tuple[str, str, 
     Returns the description, task, context_n, data_n, and desired output.
     '''
     data = read_json(path=path)
-    print(f"[DEBUG]: {data}")
+    print(f"[CONFIG]: {data}")
     prompt_data = data.get("prompt")
     prompt_info = data.get("prompt_info")
 
@@ -174,7 +174,7 @@ def read_prompt(path: str) -> tuple[str, str, str, dict, str] | tuple[str, str, 
         return None
     
 
-def read_prompt_description_and_level(path: str) -> tuple[str, str]:
+def read_prompt_info(path: str) -> tuple[str, str]:
     '''
     Reads the prompt file in the specified path.
 
@@ -182,7 +182,7 @@ def read_prompt_description_and_level(path: str) -> tuple[str, str]:
     '''
     data = read_json(path=path)
     prompt_info = data.get("prompt_info")
-    return prompt_info.get("description"), prompt_info.get("level")
+    return prompt_info.get("description"), prompt_info.get("level"), prompt_info.get("representation")
 
 
 def get_prompt_paths(path: str = "prompts"):
@@ -197,7 +197,3 @@ def get_prompt_paths(path: str = "prompts"):
         for dir in dirs:
             prompts_paths.extend(get_prompt_paths(os.path.join(root, dir)))
     return prompts_paths
-
-if __name__ == "__main__":
-    data = {"data": {"Gestern": 100, "Heute": 200, "Morgen": 300}}
-    write_json(data, "prompts/z_test.json")

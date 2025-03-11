@@ -368,6 +368,7 @@
     },
     "prompt_info": {
         "description": "temp_single",
-        "level": "single"
+        "level": "single",
+        "representation": "paasax"
     }
 }

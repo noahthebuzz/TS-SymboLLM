@@ -12,6 +12,7 @@ def format_logs_counter(counter: int) -> str:
     counter = str(counter)
     return '0' * (6 - len(counter)) + counter
 
+# TODO insert data_representation
 def log(model_name: str, ollama_params: dict, prompt_type: str, prompt: str, response: str, execution_time: float, test: bool = False):
     usr = determine_usr()
     config_data = config._get_config_content(setup_usr=usr, logs=True)
