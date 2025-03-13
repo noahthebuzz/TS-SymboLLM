@@ -9,18 +9,12 @@ from datetime import datetime, timedelta
 ##########################################################
 
 # TODO:
-# Single TSD Plot
-# Multi TSD Plot
 # Multi TSD Plot with each TSD in a separate subplot
 # Multi TSD Plot with each TSD in a separate subplot and a shared y-axis
-def single_tsd_plot(data: dict, title: str, xlabel: str, ylabel: str, save: bool = False, location: str = "./plots"):
-    None
-
-# TODO: Remove
-def plot_tsd(data: dict, title: str, xlabel: str, ylabel: str, save: bool = False, show: bool = False):
+def plot_single_tsd(data: dict, abstraction_level: str, title: str, xlabel: str, ylabel: str, save: bool = False, location: str = "./plots/") -> None:
     fig, ax = plt.subplots(figsize=(15, 7))
     ax.plot(data.keys(), data.values(), marker='o', color='b')
-    ax.set_title(title)
+    ax.set_title(title + f" ({abstraction_level})")
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.grid(visible=True, which='both', linewidth='0.5', color='gray')
@@ -31,18 +25,18 @@ def plot_tsd(data: dict, title: str, xlabel: str, ylabel: str, save: bool = Fals
     if len(data) >= 11:
         ax.set_xticks(list(data.keys())[::(len(data)//11)])
     plt.xticks(rotation=22.5)
-    
+
     if save:
-        time = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
         title = title.replace(" ", "_")
-        plt.savefig(f"./plots/{title}.png")
+        plt.savefig(f"{location}{title}_plot.png")
 
 
-def plot_multi_tsd(data1: dict, data2:dict, title: str, xlabel: str, ylabel: str, save: bool = False, show: bool = False):
+def plot_multi_tsd(data: list[dict], labels: list[dict], abstraction_level: str, title: str, xlabel: str, ylabel: str, save: bool = False, location: str = "./plots/") -> None:
     fig, ax = plt.subplots(figsize=(15, 7))
-    ax.plot(data1.keys(), data1.values(), marker='o', color='r', label='Temperature')
-    ax.plot(data2.keys(), data2.values(), marker='o', color='b', label='Capacity')
-    ax.set_title(title)
+    colors = ['b', 'r', 'g', 'c', 'm', 'y', 'k', 'w']
+    for i in range(len(data)):
+        ax.plot(data[i].keys(), data[i].values(), marker='o', color=colors[i], label=labels[i])
+    ax.set_title(title + f" ({abstraction_level})")
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.grid(visible=True, which='both', linewidth='0.5', color='gray')
@@ -50,23 +44,24 @@ def plot_multi_tsd(data1: dict, data2:dict, title: str, xlabel: str, ylabel: str
     ax.legend(loc='best', fontsize=10)
 
     # Determine number of ticks in both x and y axis
-    # data1 and data2 have the same dimensions
-    max_data_value = max(data1.values())
-    max_yticks = np.arange(0, round(max_data_value*1.25, -1), 1)[::5]
+    # data have the same dimensions
+    max_data_value = 1
+    for dataset in data:
+        max_data_value = max(max_data_value, max(dataset.values()))
+
+    max_yticks = np.arange(0, round(max_data_value*1.3, -1), 1)[::5]
     if len(max_yticks) >= 10:
         ax.set_yticks(max_yticks[::len(max_yticks)//10])
-    if len(data1) >= 11:
-        ax.set_xticks(list(data1.keys())[::(len(data1)//11)])
+    if len(data[0]) >= 11:
+        ax.set_xticks(list(data[0].keys())[::(len(data[0])//11)])
 
     if save:
-        time = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
         title = title.replace(" ", "_")
-        plt.savefig(f"./plots/{title}.png")
+        plt.savefig(f"{location}{title}_plot.png")
 
-    if show:
-        plt.show()
-    else:
-        plt.close()
+
+def plot_multi_tsd_separate(data: list[dict], labels: list[dict], abstraction_level: str, title: str, xlabel: str, ylabel: str, save: bool = False, location: str = "./plots/") -> None:
+    None
 
 
 ##########################################################
@@ -123,7 +118,7 @@ def generate_temperature_tsd(n_instances: int, interval_sec: int, time: datetime
             expo_increase_start=round(n_instances//1.75), 
             final_temp=95)
     tsd = dict(zip(timestamps, data))
-    rounded_data = list(np.around(data, 0))
+    rounded_data = np.around(data, 0).tolist()
     tsd2 = dict(zip(timestamps, rounded_data))
     # TODO implement plot_tsd
     return [tsd, tsd2]
@@ -159,9 +154,8 @@ def generate_capacity_tsd(n_instances: int, interval_sec: int, time: datetime = 
                 final_capacity=30,
     )
     tsd = dict(zip(timestamps, data))
-    rounded_data = list(np.around(data, 0))
+    rounded_data = np.around(data, 0).tolist()
     tsd2 = dict(zip(timestamps, rounded_data))
-    # TODO implement plot_tsd
     return [tsd, tsd2]
 
 ###########################################################

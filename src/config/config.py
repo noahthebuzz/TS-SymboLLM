@@ -18,7 +18,7 @@ def write_prompt_json(data: dict, path: str) -> bool:
                 for key in prompt.keys():
                     if key not in data.keys():
                         data[key] = prompt[key]
-        new_data.update({"prompt": data, "prompt_info": prompt_info})
+        new_data = {"prompt": data, "prompt_info": prompt_info}
         with open(path, 'w') as file:
             json.dump(new_data, file, indent=4)
         return True

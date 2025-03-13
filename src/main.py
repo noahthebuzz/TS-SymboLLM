@@ -20,19 +20,34 @@ def _generate_random_data():
     filename = "random"
     datasets = datagen.generate_random_tsd(n_instances=np.random.randint(low=1, high=101), interval_sec=60)
     raw_data, rounded_data = {"data": datasets[0]}, {"data": datasets[1]}
-    # TODO plot data -> filename
+    
+    # Plot data
+    datagen.plot_single_tsd(data=raw_data["data"], abstraction_level="raw", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Value", save=True, location=raw_path)
+    datagen.plot_single_tsd(data=rounded_data["data"], abstraction_level="rounded", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Value", save=True, location=rounded_path)
+
+    # Write data to json files
     config.write_prompt_json(data=raw_data    , path=raw_path + filename + "_test.json")
     config.write_prompt_json(data=rounded_data, path=rounded_path + filename + "_test.json")
+
 
 def _generate_temperature_data():
     raw_path = "prompts/single/float/"
     rounded_path = "prompts/single/integer/"
+    paasax_path = "prompts/single/paasax/"
     filename = "temperature"
     datasets = datagen.generate_temperature_tsd(n_instances=300, interval_sec=1)
-    raw_data, rounded_data = {"data": datasets[0]}, {"data": datasets[1]}
-    # TODO plot data -> filename
+    raw_data, rounded_data, paasax_data = {"data": datasets[0]}, {"data": datasets[1]}, {}
+
+    # Plot data
+    datagen.plot_single_tsd(data=raw_data["data"], abstraction_level="raw", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C)", save=True, location=raw_path)
+    datagen.plot_single_tsd(data=rounded_data["data"], abstraction_level="rounded", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C)", save=True, location=rounded_path)
+    #datagen.plot_single_tsd(data=paasax_data["data"], abstraction_level="paasax", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C)", save=True, location=paasax_path)
+
+    # Write data to json files
     config.write_prompt_json(data=raw_data    , path=raw_path + filename + "_test.json")
     config.write_prompt_json(data=rounded_data, path=rounded_path + filename + "_test.json")
+    #config.write_prompt_json(data=paasax_data, path=paasax_path + filename + "_test.json")
+
 
 def _generate_sequence_data():
     dir, name = "prompts/single/", "sequence_"
@@ -46,19 +61,32 @@ def _generate_sequence_data():
         datasets = datagen.generate_sequence_tsd(n_instances=10, interval_sec=3, sequence=i)
         data = {"data": datasets}
         # TODO plot data -> filename
+        # Plot data
+        datagen.plot_single_tsd(data=data["data"], abstraction_level="raw", title=filename, xlabel="Time (HH:MM:SS)", ylabel=f"{sequences[i].capitalize()} Values", save=True, location=dir + paths[i])
+
+        # Write data to json files
         config.write_prompt_json(data=data, path=path)
 
-def _generate_multi_tsd_data():
+
+def _generate_multi_cpu_data():
     n_instances, interval_sec, time = 300, 1, datetime.now()
     temp_data = datagen.generate_temperature_tsd(n_instances=n_instances, interval_sec=interval_sec, time=time)
     cap_data = datagen.generate_capacity_tsd(n_instances=n_instances, interval_sec=interval_sec, time=time)
-    raw_data = {"data1": temp_data[0], "data2": cap_data[0]}
-    rounded_data = {"data1": temp_data[1], "data2": cap_data[1]}
-    paths = ["prompts/multi/float/", "prompts/multi/integer/"]
+    raw_data = [cap_data[0], temp_data[0]]
+    rounded_data = [cap_data[1], temp_data[1]]
+    #paasax_data = [cap_data[2], temp_data[2]]
+    paths = ["prompts/multi/float/", "prompts/multi/integer/", "prompts/multi/paasax/"]
     filename = "cpu_temp_and_cap"
-    # TODO plot data -> filename
-    config.write_prompt_json(data=raw_data    , path=f"{paths[0]}{filename}_test.json")
-    config.write_prompt_json(data=rounded_data, path=f"{paths[1]}{filename}_test.json")
+    labels = ["Capacity (%)", "Temperature (°C)"]
+    # Plot data
+    datagen.plot_multi_tsd(data=raw_data, labels=labels, abstraction_level="raw", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C) / Capacity (%)", save=True, location=paths[0])
+    datagen.plot_multi_tsd(data=rounded_data, labels=labels, abstraction_level="rounded", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C) / Capacity (%)", save=True, location=paths[1])
+    #datagen.plot_multi_tsd(data=paasax_data, abstraction_level="paasax", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C) / Capacity (%)", save=True, location=paths[2])
+
+    # Write data to json files
+    config.write_prompt_json(data={"data_1": temp_data[0], "data_2": cap_data[0]}, path=f"{paths[0]}{filename}_test.json")
+    config.write_prompt_json(data={"data_1": temp_data[1], "data_2": cap_data[1]}, path=f"{paths[1]}{filename}_test.json")
+    #config.write_prompt_json(data={"data_1": temp_data[2], "data_2": cap_data[2]}, path=f"{paths[2]}{filename}_test.json")
     
 
 def generate_data(random: bool = False, temperature: bool = False, sequence: bool = False, multi_tsd: bool = False):
@@ -72,7 +100,7 @@ def generate_data(random: bool = False, temperature: bool = False, sequence: boo
         _generate_sequence_data()
 
     if multi_tsd:
-        _generate_multi_tsd_data()
+        _generate_multi_cpu_data()
 
 ####################################################################
 ### GENERATE PROMPTS
@@ -138,9 +166,8 @@ if __name__ == "__main__":
         main(test_multi=True)
         #config.read_all_prompts()
     else:
-        #generate_data(random=False, temperature=False, sequence=False, multi_tsd=True)
-        #funcllama.chat(model="qwen2.5:3b", params=config.get_ollama_params(isRational=True))
-        paths = config.get_prompt_paths()
+        generate_data(random=True, temperature=True, sequence=True, multi_tsd=True)
+        '''paths = config.get_prompt_paths()
         for path in paths:
             print(f"[DEBUG]: {path}")
-            config.read_prompt(path=path)
+            config.read_prompt(path=path)'''
