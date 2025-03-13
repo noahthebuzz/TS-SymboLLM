@@ -1,16 +1,16 @@
 {
     "prompt": {
         "data": {
-            "14:43:01": 1,
-            "14:43:04": 7,
-            "14:43:07": 13,
-            "14:43:10": 19,
-            "14:43:13": 25,
-            "14:43:16": 31,
-            "14:43:19": 37,
-            "14:43:22": 43,
-            "14:43:25": 49,
-            "14:43:28": 55
+            "12:21:49": 1,
+            "12:21:52": 7,
+            "12:21:55": 13,
+            "12:21:58": 19,
+            "12:22:01": 25,
+            "12:22:04": 31,
+            "12:22:07": 37,
+            "12:22:10": 43,
+            "12:22:13": 49,
+            "12:22:16": 55
         },
         "task": "Identify the underlying pattern of the following number series.",
         "data_context": "The data only consists of every third value of the number series. Your goal is to infer the rule governing the sequence and reconstruct the full set of numbers.",
