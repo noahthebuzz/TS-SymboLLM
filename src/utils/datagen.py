@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
+from tslearn.piecewise import SymbolicAggregateApproximation
+from tslearn.preprocessing import TimeSeriesScalerMeanVariance
 
 
 
@@ -83,10 +85,8 @@ def generate_random_tsd(n_instances: int, interval_sec: int) -> list[dict[str, i
     timestamps = _generate_time_instances(datetime.now(), interval_sec, n_instances)
     data = _generate_random_data(0, 100, n_instances)
     tsd = dict(zip(timestamps, data))
-    rounded_data = list(np.around(data, 0))
+    rounded_data = np.around(data, 0).tolist()
     tsd2 = dict(zip(timestamps, rounded_data))
-    # TODO implement plot_tsd
-    #plot_tsd(tsd, "Random Data", "Time (HH:MM:SS)", "Value (int)", save=True, show=False)
     return [tsd, tsd2]
 
 ###########################################################
@@ -117,11 +117,30 @@ def generate_temperature_tsd(n_instances: int, interval_sec: int, time: datetime
             unstable_deviation=3.5, 
             expo_increase_start=round(n_instances//1.75), 
             final_temp=95)
-    tsd = dict(zip(timestamps, data))
+    tsd_raw = dict(zip(timestamps, data))
     rounded_data = np.around(data, 0).tolist()
-    tsd2 = dict(zip(timestamps, rounded_data))
-    # TODO implement plot_tsd
-    return [tsd, tsd2]
+    tsd_rounded = dict(zip(timestamps, rounded_data))
+    tsd_paasax = approximate_temperature_tsd(data=rounded_data, timestamps=timestamps)
+    return [tsd_raw, tsd_rounded, tsd_paasax]
+
+# TODO refine sax approximation
+def approximate_temperature_tsd(data: list[int], timestamps: list[str], n_paa_segments: int = 10, n_sax_symbols = 8) -> None: #dict[str, float]:
+
+    dataset = np.array(data).reshape(1, -1)
+    print(f"Dataset:\n{dataset}")
+
+    scaler = TimeSeriesScalerMeanVariance(mu=0., std=1.)  # Rescale time series
+    normalized_dataset = scaler.fit_transform(dataset)
+    print(f"Dataset after scaling:\n{normalized_dataset.ravel()}")
+
+    #n_paa_segments, n_sax_symbols = 25, 10
+    sax = SymbolicAggregateApproximation(n_segments=n_paa_segments, alphabet_size_avg=n_sax_symbols)
+    sax_values = sax.fit_transform(normalized_dataset)
+    print(f"SAX dataset:\n{sax_values[0].ravel()}\nLength: {len(sax_values[0].ravel())}")
+
+    alphabet = "abcdefghijklmnopqrstuvwxyz"[:n_sax_symbols]
+    sax_string = ["".join([alphabet[int(i)] for i in sax_values[0]])]
+    print(f"SAX string:\n{sax_string}")
 
 ###########################################################
 
@@ -193,7 +212,6 @@ def generate_sequence_tsd(n_instances: int, interval_sec: int, sequence: int, ti
     timestamps = _generate_time_instances(time, interval_sec, n_instances)
     data = _generate_sequence_data(n_instances=n_instances, type_of_sequence=sequence)
     tsd = dict(zip(timestamps, data))
-    # TODO implement plot_tsd
     return tsd
         
 ###########################################################

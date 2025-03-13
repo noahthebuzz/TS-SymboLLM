@@ -162,12 +162,12 @@ def main():
 
 if __name__ == "__main__":
     if os.getlogin() == "dbisai":
-        generate_data(random=False, temperature=False, sequence=False, multi_tsd=True)
+        #generate_data(random=False, temperature=False, sequence=False, multi_tsd=True)
         main(test_multi=True)
         #config.read_all_prompts()
     else:
-        generate_data(random=True, temperature=True, sequence=True, multi_tsd=True)
-        '''paths = config.get_prompt_paths()
-        for path in paths:
-            print(f"[DEBUG]: {path}")
-            config.read_prompt(path=path)'''
+        generate_data(random=False, temperature=True, sequence=False, multi_tsd=False)
+        # generate_data(random=True, temperature=True, sequence=True, multi_tsd=True)
+        #print(f"{config.get_data_from_prompt('prompts/multi/float/cpu_temp_and_cap_test.json')}")
+        #print(f"{config.get_data_from_prompt('prompts/single/float/random_test.json')}")
+        None

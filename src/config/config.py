@@ -153,7 +153,7 @@ def read_prompt(path: str) -> tuple[str, str, str, dict, str] | tuple[str, str, 
     Returns the description, task, context_n, data_n, and desired output.
     '''
     data = read_json(path=path)
-    print(f"[CONFIG]: {data}")
+    #print(f"[CONFIG]: {data}")
     prompt_data = data.get("prompt")
     prompt_info = data.get("prompt_info")
 
@@ -162,14 +162,32 @@ def read_prompt(path: str) -> tuple[str, str, str, dict, str] | tuple[str, str, 
     if level == "single":
         #desc = prompt_info.get("description")
         task, context, data, output = prompt_data.get("task"), prompt_data.get("data_context"), prompt_data.get("data"), prompt_data.get("desired_output")
-        print(f"[path={path}]\nTask: {task}\nContext: {context}\nData: {data}\nDesired Output: {output}\n")
+        print(f"\n[READING]\n[path={path}]\nTask: {task}\nContext: {context}\nData: {data}\nDesired Output: {output}\n")
         return task, context, data, output
     
+    # TODO dynamically get the number of data contexts and data
     elif level == "multi":
         #desc = prompt_info.get("description")
         task, context_1, data_1, context_2, data_2, output = prompt_data.get("task"), prompt_data.get("data_context_1"), prompt_data.get("data_1"), prompt_data.get("data_context_2"), prompt_data.get("data_2"), prompt_data.get("desired_output")
-        print(f"[path={path}]\nTask: {task}\nContext [1]: {context_1}\nData [1]: {data_1}\nContext [2]: {context_2}\nData [2]: {data_2}\nDesired Output: {output}\n")
+        print(f"\n[READING]\n[path={path}]\nTask: {task}\nContext [1]: {context_1}\nData [1]: {data_1}\nContext [2]: {context_2}\nData [2]: {data_2}\nDesired Output: {output}\n")
         return task, context_1, data_1, context_2, data_2, output
+    else:
+        return None
+    
+
+def get_data_from_prompt(path: str) -> dict:
+    '''
+    Reads the prompt file in the specified path.
+
+    Returns the data from the prompt.
+    '''
+    a, level, b = read_prompt_info(path=path)
+    if level == "single":
+        task, context, data, output = read_prompt(path=path)
+        return data
+    elif level == "multi":
+        prompt = read_prompt(path=path)
+        return prompt[2:(len(prompt)-1):2]
     else:
         return None
     
