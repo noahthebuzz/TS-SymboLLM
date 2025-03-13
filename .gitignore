@@ -2,8 +2,6 @@
 
 .virt_env_Qwen2.5-3B/
 
-*.png
-
 # PYTHON
 __pycache__/
 *.py[cod]
