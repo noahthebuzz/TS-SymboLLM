@@ -120,27 +120,39 @@ def generate_temperature_tsd(n_instances: int, interval_sec: int, time: datetime
     tsd_raw = dict(zip(timestamps, data))
     rounded_data = np.around(data, 0).tolist()
     tsd_rounded = dict(zip(timestamps, rounded_data))
-    tsd_paasax = approximate_temperature_tsd(data=rounded_data, timestamps=timestamps)
-    return [tsd_raw, tsd_rounded, tsd_paasax]
+    tsd_sax = approximate_temperature_tsd(data=rounded_data, timestamps=timestamps)
+    return [tsd_raw, tsd_rounded, tsd_sax]
 
 # TODO refine sax approximation
-def approximate_temperature_tsd(data: list[int], timestamps: list[str], n_paa_segments: int = 10, n_sax_symbols = 8) -> None: #dict[str, float]:
+def approximate_temperature_tsd(data: list[int], timestamps: list[str], n_paa_segments: int = 10, n_sax_symbols = 8) -> dict[str, int]:
 
     dataset = np.array(data).reshape(1, -1)
-    print(f"Dataset:\n{dataset}")
+    #print(f"Dataset:\n{dataset}")
 
     scaler = TimeSeriesScalerMeanVariance(mu=0., std=1.)  # Rescale time series
     normalized_dataset = scaler.fit_transform(dataset)
-    print(f"Dataset after scaling:\n{normalized_dataset.ravel()}")
-
-    #n_paa_segments, n_sax_symbols = 25, 10
     sax = SymbolicAggregateApproximation(n_segments=n_paa_segments, alphabet_size_avg=n_sax_symbols)
     sax_values = sax.fit_transform(normalized_dataset)
-    print(f"SAX dataset:\n{sax_values[0].ravel()}\nLength: {len(sax_values[0].ravel())}")
 
-    alphabet = "abcdefghijklmnopqrstuvwxyz"[:n_sax_symbols]
-    sax_string = ["".join([alphabet[int(i)] for i in sax_values[0]])]
-    print(f"SAX string:\n{sax_string}")
+    reduced_timestamps = timestamps[::round(len(timestamps)/n_paa_segments)]
+
+    return dict(zip(reduced_timestamps, sax_values[0].ravel().tolist()))
+
+
+def get_sax_string(data: dict) -> dict[str, str]:
+    keys = []
+    values = []
+    for datum in data.values():
+        for key in datum.keys():
+            keys.append(key)
+        for value in datum.values():
+            values.append(value)
+
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'[:len(values)]
+    sax_string = [''.join([alphabet[int(i)] for i in values])][0]
+
+    return dict(zip(keys, sax_string))
+
 
 ###########################################################
 

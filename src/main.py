@@ -36,17 +36,21 @@ def _generate_temperature_data():
     paasax_path = "prompts/single/paasax/"
     filename = "temperature"
     datasets = datagen.generate_temperature_tsd(n_instances=300, interval_sec=1)
-    raw_data, rounded_data, paasax_data = {"data": datasets[0]}, {"data": datasets[1]}, {}
+    raw_data, rounded_data, paasax_data = {"data": datasets[0]}, {"data": datasets[1]}, {"data": datasets[2]}
 
     # Plot data
     datagen.plot_single_tsd(data=raw_data["data"], abstraction_level="raw", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C)", save=True, location=raw_path)
     datagen.plot_single_tsd(data=rounded_data["data"], abstraction_level="rounded", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C)", save=True, location=rounded_path)
-    #datagen.plot_single_tsd(data=paasax_data["data"], abstraction_level="paasax", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C)", save=True, location=paasax_path)
+    datagen.plot_single_tsd(data=paasax_data["data"], abstraction_level="paasax", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C)", save=True, location=paasax_path)
+
+    paasax_string_data = {"data": datagen.get_sax_string(paasax_data)}
+    #print(f"sax data:\n{paasax_data}")
+    #print(f"sax string data:\n{paasax_string_data}")
 
     # Write data to json files
     config.write_prompt_json(data=raw_data    , path=raw_path + filename + "_test.json")
     config.write_prompt_json(data=rounded_data, path=rounded_path + filename + "_test.json")
-    #config.write_prompt_json(data=paasax_data, path=paasax_path + filename + "_test.json")
+    config.write_prompt_json(data=paasax_string_data, path=paasax_path + filename + "_test.json")
 
 
 def _generate_sequence_data():
@@ -165,9 +169,10 @@ if __name__ == "__main__":
         #generate_data(random=False, temperature=False, sequence=False, multi_tsd=True)
         main(test_multi=True)
         #config.read_all_prompts()
+        None
     else:
         generate_data(random=False, temperature=True, sequence=False, multi_tsd=False)
-        # generate_data(random=True, temperature=True, sequence=True, multi_tsd=True)
+        #generate_data(random=True, temperature=True, sequence=True, multi_tsd=True)
         #print(f"{config.get_data_from_prompt('prompts/multi/float/cpu_temp_and_cap_test.json')}")
         #print(f"{config.get_data_from_prompt('prompts/single/float/random_test.json')}")
         None
