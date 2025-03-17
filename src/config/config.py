@@ -198,6 +198,7 @@ def read_prompt_info(path: str) -> tuple[str, str, str]:
 
     Returns the description and level of the prompt.
     '''
+    print(f"\n[READING INFO]\n[path={path}]\n")
     data = read_json(path=path)
     prompt_info = data.get("prompt_info")
     return prompt_info.get("description"), prompt_info.get("level"), prompt_info.get("representation")
@@ -209,8 +210,9 @@ def get_prompt_paths(path: str = "prompts"):
     for root, dirs, files in os.walk(path):
         #print(f"[CONFIG]: {root}, {dirs}, {files}")
         for file in files:
-            print(f"[CONFIG]: Found {file} in {path}")
-            prompts_paths.append(os.path.join(root, file))
+            #print(f"[CONFIG]: Found {file} in {path}")
+            if file.endswith(".json"):
+                prompts_paths.append(os.path.join(root, file))
         
         for dir in dirs:
             prompts_paths.extend(get_prompt_paths(os.path.join(root, dir)))

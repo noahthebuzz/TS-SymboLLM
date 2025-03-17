@@ -176,8 +176,11 @@ if __name__ == "__main__":
         #config.read_all_prompts()
         None
     else:
-        generate_data(random=False, temperature=True, sequence=False, multi_tsd=True)
+        #generate_data(random=False, temperature=True, sequence=False, multi_tsd=True)
         #generate_data(random=True, temperature=True, sequence=True, multi_tsd=True)
         #print(f"{config.get_data_from_prompt('prompts/multi/float/cpu_temp_and_cap_test.json')}")
         #print(f"{config.get_data_from_prompt('prompts/single/float/random_test.json')}")
+        paths = config.get_prompt_paths()
+        for path in paths:
+            print(f"{config.read_prompt_info(path=path)}")
         None
