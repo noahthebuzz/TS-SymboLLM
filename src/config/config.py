@@ -192,7 +192,7 @@ def get_data_from_prompt(path: str) -> dict:
         return None
     
 
-def read_prompt_info(path: str) -> tuple[str, str]:
+def read_prompt_info(path: str) -> tuple[str, str, str]:
     '''
     Reads the prompt file in the specified path.
 

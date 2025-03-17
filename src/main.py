@@ -172,7 +172,7 @@ def main():
 if __name__ == "__main__":
     if os.getlogin() == "dbisai":
         #generate_data(random=False, temperature=False, sequence=False, multi_tsd=True)
-        main(test_multi=True)
+        main()
         #config.read_all_prompts()
         None
     else:
