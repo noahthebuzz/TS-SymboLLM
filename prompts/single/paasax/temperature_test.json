@@ -1,19 +1,19 @@
 {
     "prompt": {
         "data": {
-            "09:58:58": "c",
-            "09:59:28": "c",
-            "09:59:58": "c",
-            "10:00:28": "c",
-            "10:00:58": "c",
-            "10:01:28": "c",
-            "10:01:58": "c",
-            "10:02:28": "e",
-            "10:02:58": "g",
-            "10:03:28": "h"
+            "11:28:29": "c",
+            "11:28:59": "c",
+            "11:29:29": "c",
+            "11:29:59": "c",
+            "11:30:29": "c",
+            "11:30:59": "c",
+            "11:31:29": "c",
+            "11:31:59": "e",
+            "11:32:29": "g",
+            "11:32:59": "h"
         },
-        "task": "Analyze the following temperature time series data of a processor. Refer to the time over which the data was recorded.",
-        "data_context": "The data was measured at 1 second intervals over a 5 minute period. This makes a total of 300 data points.",
+        "task": "Analyze the following normalized temperature time series data of a processor. Refer to the time over which the data was recorded. The data is represented using the SAX representation (symbollic aggregation approximation).",
+        "data_context": "The data was measured at 1 second intervals over a 5 minute period. This makes a total of 300 data points, which were then transformed into 10 segments of 30 data points each. The SAX representation was then applied to the segments with the following symbols: a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z.",
         "desired_output": "Provide an analysis of the temperature trends and patterns. The response should be structured, starting with key observations, followed by explanations, and concluding with potential actions or recommendations to maintain optimal processor temperature."
     },
     "prompt_info": {

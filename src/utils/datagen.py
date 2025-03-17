@@ -120,11 +120,12 @@ def generate_temperature_tsd(n_instances: int, interval_sec: int, time: datetime
     tsd_raw = dict(zip(timestamps, data))
     rounded_data = np.around(data, 0).tolist()
     tsd_rounded = dict(zip(timestamps, rounded_data))
-    tsd_sax = approximate_temperature_tsd(data=rounded_data, timestamps=timestamps)
+    tsd_sax = approximate_tsd(data=data, timestamps=timestamps)
     return [tsd_raw, tsd_rounded, tsd_sax]
 
-# TODO refine sax approximation
-def approximate_temperature_tsd(data: list[int], timestamps: list[str], n_paa_segments: int = 10, n_sax_symbols = 8) -> dict[str, int]:
+###########################################################
+
+def approximate_tsd(data: list[int], timestamps: list[str], n_paa_segments: int = 10, n_sax_symbols = 8) -> dict[str, int]:
 
     dataset = np.array(data).reshape(1, -1)
     #print(f"Dataset:\n{dataset}")
@@ -184,10 +185,11 @@ def generate_capacity_tsd(n_instances: int, interval_sec: int, time: datetime = 
                 decrease_start=round(n_instances//2.125),
                 final_capacity=30,
     )
-    tsd = dict(zip(timestamps, data))
+    tsd_raw = dict(zip(timestamps, data))
     rounded_data = np.around(data, 0).tolist()
-    tsd2 = dict(zip(timestamps, rounded_data))
-    return [tsd, tsd2]
+    tsd_rounded = dict(zip(timestamps, rounded_data))
+    tsd_sax = approximate_tsd(data=data, timestamps=timestamps)
+    return [tsd_raw, tsd_rounded, tsd_sax]
 
 ###########################################################
 

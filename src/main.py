@@ -78,19 +78,24 @@ def _generate_multi_cpu_data():
     cap_data = datagen.generate_capacity_tsd(n_instances=n_instances, interval_sec=interval_sec, time=time)
     raw_data = [cap_data[0], temp_data[0]]
     rounded_data = [cap_data[1], temp_data[1]]
-    #paasax_data = [cap_data[2], temp_data[2]]
+    paasax_data = [cap_data[2], temp_data[2]]
+
     paths = ["prompts/multi/float/", "prompts/multi/integer/", "prompts/multi/paasax/"]
     filename = "cpu_temp_and_cap"
     labels = ["Capacity (%)", "Temperature (°C)"]
+
     # Plot data
     datagen.plot_multi_tsd(data=raw_data, labels=labels, abstraction_level="raw", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C) / Capacity (%)", save=True, location=paths[0])
     datagen.plot_multi_tsd(data=rounded_data, labels=labels, abstraction_level="rounded", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C) / Capacity (%)", save=True, location=paths[1])
-    #datagen.plot_multi_tsd(data=paasax_data, abstraction_level="paasax", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C) / Capacity (%)", save=True, location=paths[2])
+    datagen.plot_multi_tsd(data=paasax_data, labels=labels, abstraction_level="paasax", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C) / Capacity (%)", save=True, location=paths[2])
+
+    sax_string = [datagen.get_sax_string({"data": paasax_data[0]}), datagen.get_sax_string({"data": paasax_data[1]})]
+
 
     # Write data to json files
     config.write_prompt_json(data={"data_1": temp_data[0], "data_2": cap_data[0]}, path=f"{paths[0]}{filename}_test.json")
     config.write_prompt_json(data={"data_1": temp_data[1], "data_2": cap_data[1]}, path=f"{paths[1]}{filename}_test.json")
-    #config.write_prompt_json(data={"data_1": temp_data[2], "data_2": cap_data[2]}, path=f"{paths[2]}{filename}_test.json")
+    config.write_prompt_json(data={"data_1": sax_string[0], "data_2": sax_string[1]}, path=f"{paths[2]}{filename}_test.json")
     
 
 def generate_data(random: bool = False, temperature: bool = False, sequence: bool = False, multi_tsd: bool = False):
@@ -171,7 +176,7 @@ if __name__ == "__main__":
         #config.read_all_prompts()
         None
     else:
-        generate_data(random=False, temperature=True, sequence=False, multi_tsd=False)
+        generate_data(random=False, temperature=True, sequence=False, multi_tsd=True)
         #generate_data(random=True, temperature=True, sequence=True, multi_tsd=True)
         #print(f"{config.get_data_from_prompt('prompts/multi/float/cpu_temp_and_cap_test.json')}")
         #print(f"{config.get_data_from_prompt('prompts/single/float/random_test.json')}")
