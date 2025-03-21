@@ -1,28 +1,28 @@
 {
     "prompt": {
         "data_1": {
-            "09:04:56": "c",
-            "09:05:26": "c",
-            "09:05:56": "c",
-            "09:06:26": "c",
-            "09:06:56": "c",
-            "09:07:26": "c",
-            "09:07:56": "c",
-            "09:08:26": "e",
-            "09:08:56": "g",
-            "09:09:26": "h"
+            "10:22:22": "c",
+            "10:22:52": "c",
+            "10:23:22": "c",
+            "10:23:52": "c",
+            "10:24:22": "c",
+            "10:24:52": "c",
+            "10:25:22": "d",
+            "10:25:52": "e",
+            "10:26:22": "g",
+            "10:26:52": "h"
         },
         "data_2": {
-            "09:04:56": "b",
-            "09:05:26": "b",
-            "09:05:56": "b",
-            "09:06:26": "b",
-            "09:06:56": "h",
-            "09:07:26": "h",
-            "09:07:56": "g",
-            "09:08:26": "f",
-            "09:08:56": "d",
-            "09:09:26": "c"
+            "10:22:22": "b",
+            "10:22:52": "b",
+            "10:23:22": "b",
+            "10:23:52": "b",
+            "10:24:22": "h",
+            "10:24:52": "h",
+            "10:25:22": "g",
+            "10:25:52": "f",
+            "10:26:22": "d",
+            "10:26:52": "b"
         },
         "task": "Analyze the following normalized temperature time series data of a processor. Refer to the time over which the data was recorded. The data is represented using the SAX representation (symbollic aggregation approximation).",
         "data_context_1": "The temperature data was measured at 1 second intervals over a 5 minute period. This makes a total of 300 data points, which were then transformed into 10 segments of 30 data points each. The SAX representation was then applied to the segments with the following symbols: a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z.",

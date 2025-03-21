@@ -22,13 +22,21 @@ def pull_ollama_model(model: str) -> bool:
         return False
     
 
-def generate_response(model: str, prompt: str, params: dict) -> Iterator[GenerateResponse]:
-    response: Iterator[GenerateResponse] = ollama.generate(
-        model=model, 
-        prompt=prompt,
-        options=params,
-        stream=True,
-    ) 
+def generate_response(model: str, prompt: str, params: dict = None) -> Iterator[GenerateResponse]:
+    response = None
+    if params is not None:
+        response: Iterator[GenerateResponse] = ollama.generate(
+            model=model, 
+            prompt=prompt,
+            options=params,
+            stream=True,
+        )
+    else:
+        response: Iterator[GenerateResponse] = ollama.generate(
+            model=model, 
+            prompt=prompt,
+            stream=True,
+        )
     return response
 
 

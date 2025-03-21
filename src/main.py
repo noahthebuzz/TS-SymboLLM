@@ -178,23 +178,64 @@ def main():
             logger.log(model_name=model, ollama_params=params, prompt_type=description, data_representation=data_representation, prompt=prompt, response=response_string, execution_time=execution_time)
             processing_counter += 1
     increase_logs_counter()
+
+def one_by_one_test():
+    increase_logs_counter()
+
+    models = config.get_models(large=True, medium=True, small=True)
+    models.sort()
+    params = [config.get_ollama_parameter(isRational=True), config.get_ollama_parameter(isRational=False)]
+    prompt_paths = config.get_prompt_paths()
+    prompt_paths.sort()
+
+    counter = 1
+
+    while(True):
+        print(f"Continue ? (Y/N)\n")
+        cont = input("  > ")
+        if cont == "N":
+            break
+        print(f"[RUN]: {counter}")
+        print(f"[MODELS]: {models}")
+        print(f"[PARAMS]: {params} (rational/creative)")
+        print(f"[PROMPTS]: {prompt_paths}")
+        model = input("Enter the model to test: \n  > ")
+        if model not in models:
+            print("Invalid model name.")
+            continue
+        param = input("Enter the parameter to use: \n  > ")
+        if param not in ["rational", "creative", "none"]:
+            print("Invalid parameter name.")
+            continue
+        if param == "rational":
+            param = params[0]
+        elif param == "creative":
+            param = params[1]
+        else:
+            param = None
+        prompt_path = input("Enter the prompt path: \n  > ")
+        if prompt_path not in prompt_paths:
+            print("Invalid prompt path.")
+            continue
+        start_time = time.time()
+        description, level, data_representation = config.read_prompt_info(path=prompt_path)
+        prompt = generate_prompt(prompt_path, level=level)
+        response = funcllama.generate_response(model=model, prompt=prompt, params=param)
+        response_string = funcllama.print_response(response)
+        execution_time = time.time() - start_time
+        logger.log(model_name=model, ollama_params=param, prompt_type=description, data_representation=data_representation, prompt=prompt, response=response_string, execution_time=execution_time)
+        #increase_logs_counter()
+        print(f"[EXECUTION TIME]: {execution_time}")
+        print(f"\n ######################################################### \n")
+
             
 
 if __name__ == "__main__":
     if os.getlogin() == "dbisai":
-        start_time = time.time()
         #generate_data(random=True, temperature=True, sequence=True, multi_tsd=True)
-        main()
-        execution_time = time.time() - start_time
-        print(f"[TOTAL EXECUTION TIME]: {execution_time}")
-        #config.read_all_prompts()
+        #main()
+        one_by_one_test()
         None
     else:
-        #generate_data(random=False, temperature=True, sequence=False, multi_tsd=True)
         #generate_data(random=True, temperature=True, sequence=True, multi_tsd=True)
-        #print(f"{config.get_data_from_prompt('prompts/multi/float/cpu_temp_and_cap_test.json')}")
-        #print(f"{config.get_data_from_prompt('prompts/single/float/random_test.json')}")
-        paths = config.get_prompt_paths()
-        for path in paths:
-            print(f"{config.read_prompt_info(path=path)}")
         None

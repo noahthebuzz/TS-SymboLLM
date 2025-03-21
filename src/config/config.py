@@ -216,4 +216,4 @@ def get_prompt_paths(path: str = "prompts"):
         
         for dir in dirs:
             prompts_paths.extend(get_prompt_paths(os.path.join(root, dir)))
-    return prompts_paths
+    return list(set(prompts_paths))
