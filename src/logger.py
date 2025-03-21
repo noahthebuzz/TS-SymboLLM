@@ -38,7 +38,7 @@ def log(model_name: str, ollama_params: dict, prompt_type: str, data_representat
     elif model_name in small_models:
          model_size = "small"
 
-    dirs = f"logs/{usr}/{prompt_type}/{model_size}/{model_name}/{logs_string}"
+    dirs = f"logs/{usr}/{logs_string}/{prompt_type}/{model_size}/{model_name}"
     os.makedirs(dirs, exist_ok=True)
 
     time = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
@@ -72,7 +72,7 @@ def log(model_name: str, ollama_params: dict, prompt_type: str, data_representat
                     log_file.write(f"GPU: {usr_setup['GPU']}\n")
                     log_file.write(f"OS: {usr_setup['OS']}\n\n")
                     log_file.write(f"-------------------------------------------\n\n")
-                log_file.write(f"Representation/Form of Data: {data_representation}\n")
+                log_file.write(f"Path: {data_representation}\n")
                 log_file.write(f"-------------------------------------------\n\n")
                 log_file.write(f"Prompt:\n{prompt}\n\n")
                 log_file.write(f"-------------------------------------------\n\n")
@@ -84,6 +84,10 @@ def log(model_name: str, ollama_params: dict, prompt_type: str, data_representat
     #if not test:
     #    logs += 1
     #    config.write_json(data={"logs": logs}, path="src/config/config.json", overwrite=False)
+
+def log_processing_order(path: str, model: str, counter: int):
+    data = {f"{counter}": {"path": path, "model": model}}
+    config.write_json(data=data, path="logs/processing_order.json", overwrite=False)
 
 if __name__ == "__main__":
      print(determine_usr())

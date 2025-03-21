@@ -1,28 +1,28 @@
 {
     "prompt": {
         "data_1": {
-            "11:28:30": "b",
-            "11:29:00": "b",
-            "11:29:30": "b",
-            "11:30:00": "b",
-            "11:30:30": "h",
-            "11:31:00": "h",
-            "11:31:30": "g",
-            "11:32:00": "f",
-            "11:32:30": "d",
-            "11:33:00": "c"
+            "09:04:56": "c",
+            "09:05:26": "c",
+            "09:05:56": "c",
+            "09:06:26": "c",
+            "09:06:56": "c",
+            "09:07:26": "c",
+            "09:07:56": "c",
+            "09:08:26": "e",
+            "09:08:56": "g",
+            "09:09:26": "h"
         },
         "data_2": {
-            "11:28:30": "c",
-            "11:29:00": "c",
-            "11:29:30": "c",
-            "11:30:00": "c",
-            "11:30:30": "c",
-            "11:31:00": "c",
-            "11:31:30": "c",
-            "11:32:00": "e",
-            "11:32:30": "g",
-            "11:33:00": "h"
+            "09:04:56": "b",
+            "09:05:26": "b",
+            "09:05:56": "b",
+            "09:06:26": "b",
+            "09:06:56": "h",
+            "09:07:26": "h",
+            "09:07:56": "g",
+            "09:08:26": "f",
+            "09:08:56": "d",
+            "09:09:26": "c"
         },
         "task": "Analyze the following normalized temperature time series data of a processor. Refer to the time over which the data was recorded. The data is represented using the SAX representation (symbollic aggregation approximation).",
         "data_context_1": "The temperature data was measured at 1 second intervals over a 5 minute period. This makes a total of 300 data points, which were then transformed into 10 segments of 30 data points each. The SAX representation was then applied to the segments with the following symbols: a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z.",
@@ -31,6 +31,7 @@
     },
     "prompt_info": {
         "description": "cpu_temp_load",
-        "level": "paasax"
+        "level": "multi",
+        "representation": "paasax"
     }
 }

@@ -95,7 +95,7 @@ def _generate_multi_cpu_data():
     # Write data to json files
     config.write_prompt_json(data={"data_1": temp_data[0], "data_2": cap_data[0]}, path=f"{paths[0]}{filename}_test.json")
     config.write_prompt_json(data={"data_1": temp_data[1], "data_2": cap_data[1]}, path=f"{paths[1]}{filename}_test.json")
-    config.write_prompt_json(data={"data_1": sax_string[0], "data_2": sax_string[1]}, path=f"{paths[2]}{filename}_test.json")
+    config.write_prompt_json(data={"data_1": sax_string[1], "data_2": sax_string[0]}, path=f"{paths[2]}{filename}_test.json")
     
 
 def generate_data(random: bool = False, temperature: bool = False, sequence: bool = False, multi_tsd: bool = False):
@@ -151,14 +151,24 @@ def main():
     # Pull the models
     for model in models:
         funcllama.pull_ollama_model(model=model)
+    print(f"[MAIN]: number of models = {len(models)}")
 
     params = config.get_ollama_parameter(isRational=True)
     
-    prompt_paths = config.get_prompt_paths()
+    # Cast to set, to remove duplicates, and back to get a list...
+    prompt_paths = list(set(config.get_prompt_paths()))
+    prompt_paths.sort()
+    print(f"[MAIN]: number of prompts = {len(prompt_paths)}")
+
+    counter = 1
+    processing_counter = 1
 
     for model in models:
         print(f"\nTesting model: {model}\n")
         for path in prompt_paths:
+            print(f"[COUTNER]: {counter}")
+            logger.log_processing_order(path=path, model=model, counter=processing_counter)
+            counter += 1
             start_time = time.time()
             description, level, data_representation = config.read_prompt_info(path=path)
             prompt = generate_prompt(path, level=level)
@@ -166,13 +176,17 @@ def main():
             response_string = funcllama.print_response(response)
             execution_time = time.time() - start_time
             logger.log(model_name=model, ollama_params=params, prompt_type=description, data_representation=data_representation, prompt=prompt, response=response_string, execution_time=execution_time)
+            processing_counter += 1
     increase_logs_counter()
             
 
 if __name__ == "__main__":
     if os.getlogin() == "dbisai":
-        #generate_data(random=False, temperature=False, sequence=False, multi_tsd=True)
+        start_time = time.time()
+        #generate_data(random=True, temperature=True, sequence=True, multi_tsd=True)
         main()
+        execution_time = time.time() - start_time
+        print(f"[TOTAL EXECUTION TIME]: {execution_time}")
         #config.read_all_prompts()
         None
     else:
