@@ -1,5 +1,5 @@
 {
-    "logs": 3,
+    "logs": 2,
     "setup": {
         "noahthebuzz": {
             "Processor": "Intel Core i7-12700H",
@@ -60,13 +60,16 @@
     },
     "models": {
         "large": [
+            "qwen2.5:72b",
             "gemma3:27b",
             "mistral-small:24b"
         ],
         "medium": [
-            "qwen2.5:14b"
+            "qwen2.5:14b",
+            "phi4:14b"
         ],
         "small": [
+            "mistral:7b",
             "qwen2.5:7b",
             "gemma:7b"
         ]

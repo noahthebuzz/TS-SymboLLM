@@ -11,7 +11,14 @@
             "10:22:42": 79,
             "10:22:45": 97,
             "10:22:48": 107
-        }
+        },
+        "task": "Identify the underlying pattern of the following number series.",
+        "data_context": "The data only consists of every third value of the number series. Your goal is to infer the rule governing the sequence and reconstruct the full set of numbers.",
+        "desired_output": "Complete the series, with matching timestamps, and return a Python Dictionairy with the complete series of numbers and timestamps."
     },
-    "prompt_info": {}
+    "prompt_info": {
+        "description": "sequence_prime",
+        "level": "single",
+        "representation": "rounded"
+    }
 }

@@ -13,7 +13,7 @@ def format_logs_counter(counter: int) -> str:
     return '0' * (6 - len(counter)) + counter
 
 
-def log(model_name: str, ollama_params: dict, prompt_type: str, data_representation: str, prompt: str, response: str, execution_time: float, test: bool = False):
+def log(model_name: str, ollama_params: dict, prompt_path: str, prompt_type: str, data_representation: str, prompt: str, response: str, execution_time: float, test: bool = False):
     usr = determine_usr()
     config_data = config._get_config_content(setup_usr=usr, logs=True)
 
@@ -38,7 +38,13 @@ def log(model_name: str, ollama_params: dict, prompt_type: str, data_representat
     elif model_name in small_models:
          model_size = "small"
 
-    dirs = f"logs/{usr}/{logs_string}/{prompt_type}/{model_size}/{model_name}"
+    params = ""
+    if ollama_params is None:
+        params = "default"
+    else:
+        params = "rational" 
+
+    dirs = f"logs/{usr}/{logs_string}/{prompt_type}/{model_size}/{model_name}/{params}/{data_representation}"
     os.makedirs(dirs, exist_ok=True)
 
     time = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
@@ -66,15 +72,18 @@ def log(model_name: str, ollama_params: dict, prompt_type: str, data_representat
                         log_file.write(f"     top_p         : {ollama_params['top_p']}\n")
                         log_file.write(f"     min_p         : {ollama_params['min_p']}\n\n")
                         log_file.write(f"-------------------------------------------\n\n")
+                else:
+                     log_file.write(f"Default\n")
+                     log_file.write(f"-------------------------------------------\n\n")
                 if usr_setup is not None:
                     log_file.write(f"Processor: {usr_setup['Processor']}\n")
                     log_file.write(f"RAM: {usr_setup['RAM']}\n")
                     log_file.write(f"GPU: {usr_setup['GPU']}\n")
                     log_file.write(f"OS: {usr_setup['OS']}\n\n")
                     log_file.write(f"-------------------------------------------\n\n")
-                log_file.write(f"Path: {data_representation}\n")
+                log_file.write(f"Path: {prompt_path}\n")
                 log_file.write(f"-------------------------------------------\n\n")
-                log_file.write(f"Prompt:\n{prompt}\n\n")
+                log_file.write(f"Prompt: {data_representation}\n{prompt}\n\n")
                 log_file.write(f"-------------------------------------------\n\n")
                 log_file.write(f"Answer:\n{response}\n\n")
                 log_file.write(f"-------------------------------------------\n\n")

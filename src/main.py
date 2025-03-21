@@ -179,6 +179,7 @@ def main():
             processing_counter += 1
     increase_logs_counter()
 
+
 def one_by_one_test():
     increase_logs_counter()
 
@@ -193,12 +194,21 @@ def one_by_one_test():
     while(True):
         print(f"Continue ? (Y/N)\n")
         cont = input("  > ")
-        if cont == "N":
+        if cont == "N" or cont == "n":
             break
-        print(f"[RUN]: {counter}")
-        print(f"[MODELS]: {models}")
-        print(f"[PARAMS]: {params} (rational/creative)")
-        print(f"[PROMPTS]: {prompt_paths}")
+        print(f"\n[RUN]: {counter}")
+        print(f"\n[MODELS]:")
+        for model in models:
+            print(f"  --> {model}")
+        print(f"\n[PARAMS]:")
+        for param in ["rational", "none"]:
+            print(f"  --> {param}")
+        print(f"\n[PROMPTS]:")
+        for path in prompt_paths:
+            print(f"  --> {path}")
+
+        print(f"\n ############################################ \n")
+
         model = input("Enter the model to test: \n  > ")
         if model not in models:
             print("Invalid model name.")
@@ -223,11 +233,10 @@ def one_by_one_test():
         response = funcllama.generate_response(model=model, prompt=prompt, params=param)
         response_string = funcllama.print_response(response)
         execution_time = time.time() - start_time
-        logger.log(model_name=model, ollama_params=param, prompt_type=description, data_representation=data_representation, prompt=prompt, response=response_string, execution_time=execution_time)
+        logger.log(model_name=model, ollama_params=param, prompt_path=path, prompt_type=description, data_representation=data_representation, prompt=prompt, response=response_string, execution_time=execution_time)
         #increase_logs_counter()
         print(f"[EXECUTION TIME]: {execution_time}")
         print(f"\n ######################################################### \n")
-
             
 
 if __name__ == "__main__":

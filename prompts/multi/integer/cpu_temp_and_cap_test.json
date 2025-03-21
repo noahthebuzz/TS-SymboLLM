@@ -605,9 +605,9 @@
             "10:27:21": 38.0
         },
         "task": "Analyze the following temperature time series data of a processor. Refer to the time over which the data was recorded. Consider the processor performance data.",
-        "data_context_1": "The temperature data was measured at 1 second intervals over a 5 minute period. This makes a total of 300 data points.",
-        "data_context_2": "The processor-load data was recorded at 1 second intervals over a 5 minute period. This makes a total of 300 data points.",
-        "desired_output": "Provide an analysis of temperature trends and patterns as a function of processor utilization. The response should be structured, starting with key observations, followed by explanations and concluding with possible actions or recommendations to maintain an optimal processor temperature."
+        "data_context_1": "The temperature data in data_1 was measured at 1 second intervals over a 5 minute period. This makes a total of 300 data points.",
+        "data_context_2": "The processor-losad data in data_2 was recorded at 1 second intervals over a 5 minute period. This makes a total of 300 data points.",
+        "desired_output": "Provide an analysis of the temperature trends and patterns. The response should be structured, starting with key observations, followed by explanations, and concluding with potential actions or recommendations to maintain optimal processor temperature. Generate a flow diagram in mermaid syntax, describing the necessary interventions for problem identification and fixing. Only use the following interventions: reading temperature, reading system load, reading system error log, increasing Fan speed, end system processes, lower maximum processor usage, decrease room temperature."
     },
     "prompt_info": {
         "description": "cpu_temp_load",
