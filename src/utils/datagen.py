@@ -155,6 +155,25 @@ def get_sax_string(data: dict) -> dict[str, str]:
     return dict(zip(keys, sax_string))
 
 
+def get_sax_values(data: dict) -> dict[str, int]:
+    keys = []
+    values = []
+    for datum in data.values():
+        for key in datum.keys():
+            keys.append(key)
+        for value in datum.values():
+            values.append(value)
+
+    # match the letter in values to the corresponding number
+    # like a = 1, b = 2, c = 3, ...
+    sax_values = []
+    for i in values:
+        sax_values.append(ord(i) - ord('a') + 1)
+
+    return dict(zip(keys, sax_values))
+
+
+
 ###########################################################
 
 def _generate_capacity_data(n_data_points: int, start_capacity: float, stable_deviation: float, jump_start: int, jump_capacity:float, jump_deviation: float, decrease_start: int, final_capacity: float) -> list[float]:
