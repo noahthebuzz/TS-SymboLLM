@@ -181,7 +181,7 @@ def main():
 
 
 def one_by_one_test():
-    increase_logs_counter()
+    #increase_logs_counter()
 
     models = config.get_models(large=True, medium=True, small=True)
     models.sort()
@@ -204,8 +204,8 @@ def one_by_one_test():
         for param in ["rational", "none"]:
             print(f"  --> {param}")
         print(f"\n[PROMPTS]:")
-        for path in prompt_paths:
-            print(f"  --> {path}")
+        for i, path in enumerate(prompt_paths):
+            print(f"  --> [{i}]:{path}")
 
         print(f"\n ############################################ \n")
 
@@ -224,9 +224,12 @@ def one_by_one_test():
         else:
             param = None
         prompt_path = input("Enter the prompt path: \n  > ")
-        if prompt_path not in prompt_paths:
+        if prompt_path in "0 1 2 3 4 5 6":
+            prompt_path = prompt_paths[int(prompt_path)]
+        elif prompt_path not in prompt_paths:
             print("Invalid prompt path.")
             continue
+
         start_time = time.time()
         description, level, data_representation = config.read_prompt_info(path=prompt_path)
         prompt = generate_prompt(prompt_path, level=level)
