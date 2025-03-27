@@ -1,0 +1,33 @@
+Observation:
+
+[+1] Erkennt alle Elemente in den Listen
+[+1] Identifiziert Daten richtig -> data_1 temp, data_2 cpu load
+[+1] Erkennt bei Temp erst stabile Phase
+[+1] Erkennt bei CPU load stabile Phase
+[+1] Erkennt bei CPU load enormen Anstieg
+[+1] Erkennt Anstieg der Temp nach CPU load Sprung
+[+1] Erkennt Temp steigt nur
+[+1] Erkennt Cpu load sinkt wieder auf normal Niveau an
+[+1] Erkennt Temp sinkt nicht mehr ab
+[+1] Erkennt Zeitdaten richtig (5min Zeitraum)
+([+2] Erkennt maximal/minimal Temperatur)
+
+###################################################################
+Explanation:
+
+[+2] Erkennt CPU load und Temp korrelieren miteinander
+[+2] Erkennt Temp Anstieg durch erhöhte Auslastung
+[+2] Erkennt Möglichkeit für Fehler des Kühlers / Verzögerung des Kühlers
+[+2] Erkennt externe Faktoren (Raumtemperatur, etc.) als Problem
+[+2] Erkennt Möglichkeit für Error in Soft/Hardware
+
+###################################################################
+Recommendation:
+
+[+2] Monitor Temperature
+[+2] Monitor CPU load
+[+2] Check for errors
+[+1] Increase Fan Speed
+[+1] Decrease Room Temperature
+[+1] Lower CPU usage
+[+1] End processes

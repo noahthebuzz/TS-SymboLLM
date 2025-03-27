@@ -1,0 +1,9 @@
+Abgabe 01.Juli
+
+Schreiben:
+Mitte/Ende Mai
+
+Features:
+- [x] min/max bei sax einfügen in prompt
+- [ ] neue TSD erstellen (mit 3 TSD, mit mehreren TSD wo mehrere selbe Einheit haben)
+- [ ] Ansatz mit DT
