@@ -212,6 +212,41 @@ def generate_capacity_tsd(n_instances: int, interval_sec: int, time: datetime = 
 
 ###########################################################
 
+def generate_fanspeed_data(n_data_points: int, start_rpm: float, stable_deviation: float, jump_start: int, jump_rpm: float, decrease_start: int, final_rpm: float) -> list[float]:
+    # 0. Ruhige Phase
+    ruhige_phase = np.random.normal(loc=start_rpm, scale=stable_deviation, size=jump_start)
+
+    # 1. Jump Phase
+    jump_phase = np.random.normal(loc=jump_rpm, scale=stable_deviation, size=decrease_start-jump_start)
+
+    # 2. Decrease Phase
+    time_decrease = np.arange(n_data_points - decrease_start)
+    decrease_phase = jump_rpm - (jump_rpm - final_rpm) * time_decrease / (n_data_points - decrease_start) + np.random.normal(scale=(stable_deviation)/1, size=n_data_points - decrease_start)
+
+    # 3. Kombinieren der Daten
+    fanspeed_data = np.concatenate([ruhige_phase, jump_phase, decrease_phase])
+
+    return fanspeed_data.tolist()
+
+def generate_fanspeed_tsd(n_instances: int, interval_sec: int, time: datetime = datetime.now()) -> list[dict]:
+    timestamps = _generate_time_instances(time, interval_sec, n_instances)
+    data = generate_fanspeed_data(
+                n_data_points=n_instances,
+                start_rpm=40.0,
+                stable_deviation=3.0,
+                jump_start=round(n_instances//2.5),
+                jump_rpm=85.0,
+                decrease_start=round(n_instances//2.125),
+                final_rpm=10.0,
+    )
+    tsd_raw = dict(zip(timestamps, data))
+    rounded_data = np.around(data, 0).tolist()
+    tsd_rounded = dict(zip(timestamps, rounded_data))
+    tsd_sax = approximate_tsd(data=data, timestamps=timestamps)
+    return [tsd_raw, tsd_rounded, tsd_sax]
+
+###########################################################
+
 def _generate_sequence_data(n_instances: int,  type_of_sequence: int, every_n_th_number: int = 3) -> list[int]:    
     if every_n_th_number < 1:
         every_n_th_number = 1
