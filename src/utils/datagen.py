@@ -212,7 +212,7 @@ def generate_capacity_tsd(n_instances: int, interval_sec: int, time: datetime = 
 
 ###########################################################
 
-def generate_fanspeed_data(n_data_points: int, start_rpm: float, stable_deviation: float, jump_start: int, jump_rpm: float, decrease_start: int, final_rpm: float) -> list[float]:
+def _generate_fanspeed_data(n_data_points: int, start_rpm: float, stable_deviation: float, jump_start: int, jump_rpm: float, decrease_start: int, final_rpm: float) -> list[float]:
     # 0. Ruhige Phase
     ruhige_phase = np.random.normal(loc=start_rpm, scale=stable_deviation, size=jump_start)
 
@@ -230,7 +230,7 @@ def generate_fanspeed_data(n_data_points: int, start_rpm: float, stable_deviatio
 
 def generate_fanspeed_tsd(n_instances: int, interval_sec: int, time: datetime = datetime.now()) -> list[dict]:
     timestamps = _generate_time_instances(time, interval_sec, n_instances)
-    data = generate_fanspeed_data(
+    data = _generate_fanspeed_data(
                 n_data_points=n_instances,
                 start_rpm=40.0,
                 stable_deviation=3.0,
@@ -245,6 +245,67 @@ def generate_fanspeed_tsd(n_instances: int, interval_sec: int, time: datetime = 
     tsd_rounded = dict(zip(timestamps, rounded_data))
     tsd_sax = approximate_tsd(data=data, timestamps=timestamps)
     return [tsd_raw, tsd_rounded, tsd_sax, tsd_raw_plot]
+
+###########################################################
+
+def _generate_voltage_data(n_data_points: int, start_capacity: float, stable_deviation: float, jump_start: int, jump_capacity: float, jump_deviation: float, decrease_start: int, final_capacity: float) -> list[float]:
+    # 0. Ruhige Phase
+    ruhige_phase = np.random.normal(loc=start_capacity, scale=stable_deviation, size=jump_start)
+
+    # 1. Jump Phase
+    jump_phase = np.random.normal(loc=jump_capacity, scale=jump_deviation, size=decrease_start-jump_start)
+
+    # 2. Decrease Phase
+    time_decrease = np.arange(n_data_points - decrease_start)
+    decrease_phase = jump_capacity - (jump_capacity - final_capacity) * time_decrease / (n_data_points - decrease_start) + np.random.normal(scale=(stable_deviation + jump_deviation)/1, size=n_data_points - decrease_start)
+
+    # 3. Kombinieren der Daten
+    voltage_data = np.concatenate([ruhige_phase, jump_phase, decrease_phase])
+
+    return voltage_data.tolist()
+
+def generate_voltage_tsd(n_instances: int, interval_sec: int, time: datetime = datetime.now()) -> list[dict]:
+    timestamps = _generate_time_instances(time, interval_sec, n_instances)
+    data = _generate_voltage_data(
+                n_data_points=n_instances,
+                start_capacity=35,
+                stable_deviation=3.25,
+                jump_start=round(n_instances//2.5),
+                jump_capacity=80,
+                jump_deviation=5.5,
+                decrease_start=round(n_instances//2.125),
+                final_capacity=60
+    )
+    tsd_raw = dict(zip(timestamps, data))
+    tsd_raw_plot = dict(zip(timestamps, data))
+    rounded_data = np.around(data, 0).tolist()
+    tsd_rounded = dict(zip(timestamps, rounded_data))
+    tsd_sax = approximate_tsd(data=data, timestamps=timestamps)
+    return [tsd_raw, tsd_rounded, tsd_sax, tsd_raw_plot]
+
+###########################################################
+
+def _generate_roomtemp_data(n_data_points: int, const_temp: float, stable_deviation: float) -> list[float]:
+    # 0. Ruhige Phase
+    ruhige_phase = np.random.normal(loc=const_temp, scale=stable_deviation, size=n_data_points)
+
+    # 1. Kombinieren der Daten
+    roomtemp_data = ruhige_phase
+
+    return roomtemp_data.tolist()
+
+def generate_roomtemp_tsd(n_instances: int, interval_sec: int, time: datetime = datetime.now()) -> list[dict]:
+    timestamps = _generate_time_instances(time, interval_sec, n_instances)
+    data = _generate_roomtemp_data(
+                n_data_points=n_instances,
+                const_temp=15,
+                stable_deviation=0.5
+    )
+    tsd_raw = dict(zip(timestamps, data))
+    rounded_data = np.around(data, 0).tolist()
+    tsd_rounded = dict(zip(timestamps, rounded_data))
+    tsd_sax = approximate_tsd(data=data, timestamps=timestamps)
+    return [tsd_raw, tsd_rounded, tsd_sax]
 
 ###########################################################
 

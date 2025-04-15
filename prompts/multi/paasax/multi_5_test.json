@@ -1,0 +1,77 @@
+{
+    "prompt": {
+        "data_1": {
+            "14:31:54": "c",
+            "14:32:24": "c",
+            "14:32:54": "c",
+            "14:33:24": "c",
+            "14:33:54": "c",
+            "14:34:24": "c",
+            "14:34:54": "c",
+            "14:35:24": "e",
+            "14:35:54": "g",
+            "14:36:24": "h"
+        },
+        "data_2": {
+            "14:31:54": "b",
+            "14:32:24": "b",
+            "14:32:54": "b",
+            "14:33:24": "b",
+            "14:33:54": "h",
+            "14:34:24": "h",
+            "14:34:54": "g",
+            "14:35:24": "f",
+            "14:35:54": "d",
+            "14:36:24": "b"
+        },
+        "data_3": {
+            "14:31:54": "c",
+            "14:32:24": "c",
+            "14:32:54": "c",
+            "14:33:24": "c",
+            "14:33:54": "h",
+            "14:34:24": "h",
+            "14:34:54": "f",
+            "14:35:24": "d",
+            "14:35:54": "b",
+            "14:36:24": "a"
+        },
+        "data_4": {
+            "14:31:54": "b",
+            "14:32:24": "b",
+            "14:32:54": "b",
+            "14:33:24": "b",
+            "14:33:54": "g",
+            "14:34:24": "g",
+            "14:34:54": "g",
+            "14:35:24": "g",
+            "14:35:54": "f",
+            "14:36:24": "e"
+        },
+        "data_5": {
+            "14:31:54": "d",
+            "14:32:24": "e",
+            "14:32:54": "e",
+            "14:33:24": "d",
+            "14:33:54": "d",
+            "14:34:24": "e",
+            "14:34:54": "e",
+            "14:35:24": "e",
+            "14:35:54": "d",
+            "14:36:24": "d"
+        },
+        "task": "Analyze the following normalized temperature time series data of a processor. Refer to the time over which the data was recorded. The data is represented using the SAX representation (symbollic aggregation approximation).",
+        "data_context_1": "The temperature data in data_1 was measured at 1 second intervals over a 5 minute period. This makes a total of 300 data points, which were then transformed into 10 segments of 30 data points each. The SAX representation was then applied to the segments with the following symbols: a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z. The minimum value is around 50°C, the maximum value around 100°C.",
+        "data_context_2": "The processor-load data in data_2 was measured at 1 second intervals over a 5 minute period. This makes a total of 300 data points, which were then transformed into 10 segments of 30 data points each. The SAX representation was then applied to the segments with the following symbols: a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z. The minimum value is around 30% load, the maximum value around 80%.",
+        "data_context_3": "The fanspeed data in data_3 was measured at 1 second intervals over a 5 minute period. This makes a total of 300 data points, which were then transformed into 10 segments of 30 data points each. The SAX representation was then applied to the segments with the following symbols: a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z. The minimum value is around 1000 RPM, the maximum value around 8500 RPM.",
+        "data_context_4": "The voltage data of the CPU in data_4 was measured at 1 second intervals over a 5 minute period. This makes a total of 300 data points, which were then transformed into 10 segments of 30 data points each. The SAX representation was then applied to the segments with the following symbols: a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z. The minimum value is around 35% capacity which is about 0.45V, the maximum value around 80% which is about 1.05V.",
+        "data_context_5": "The rooom temperature data in data_5 was measured at 1 second intervals over a 5 minute period. This makes a total of 300 data points, which were then transformed into 10 segments of 30 data points each. The SAX representation was then applied to the segments with the following symbols: a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z. The minimum value is around 14°C, the maximum value around 16°C.",
+        "desired_output": "Provide an analysis of the temperature trends and patterns depending on the processor load. The response should be structured, starting with key observations, followed by explanations, and concluding with potential actions or recommendations to maintain optimal processor temperature. Generate a flow diagram in mermaid syntax, describing the necessary interventions for problem identification and fixing. Only use the following interventions: reading temperature, reading system load, reading system error log, increasing Fan speed, end system processes, lower maximum processor usage, decrease room temperature."
+    },
+    "prompt_info": {
+        "description": "multi_5",
+        "level": "multi",
+        "representation": "paasax",
+        "datasets": 5
+    }
+}

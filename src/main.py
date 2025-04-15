@@ -123,9 +123,69 @@ def _generate_multi_3_data():
     config.write_prompt_json(data={"data_1": temp_data[0], "data_2": cap_data[0], "data_3": rpm_data[0]}, path=f"{paths[0]}{filename}_test.json")
     #config.write_prompt_json(data={"data_1": temp_data[1], "data_2": cap_data[1], "data_3": rpm_data[1]}, path=f"{paths[1]}{filename}_test.json")
     config.write_prompt_json(data={"data_1": sax_string[1], "data_2": sax_string[0], "data_3": sax_string[2]}, path=f"{paths[1]}{filename}_test.json")
-    
 
-def generate_data(random: bool = False, temperature: bool = False, sequence: bool = False, cpu_temp_cap_tsd: bool = False, multi_3_tsd: bool = False):
+
+def _generate_multi_4_data():
+    n_instances, interval_sec, time = 300, 1, datetime.now()
+    temp_data = datagen.generate_temperature_tsd(n_instances=n_instances, interval_sec=interval_sec, time=time)
+    cap_data = datagen.generate_capacity_tsd(n_instances=n_instances, interval_sec=interval_sec, time=time)
+    rpm_data = datagen.generate_fanspeed_tsd(n_instances=n_instances, interval_sec=interval_sec, time=time)
+    volt_data = datagen.generate_voltage_tsd(n_instances=n_instances, interval_sec=interval_sec, time=time)
+    raw_data = [cap_data[0], temp_data[0], rpm_data[0], volt_data[0]]
+    raw_data_plot = [cap_data[0], temp_data[0], rpm_data[3], volt_data[3]]
+    #rounded_data = [cap_data[1], temp_data[1], rpm_data[1], volt_data[1]]
+    paasax_data = [cap_data[2], temp_data[2], rpm_data[2], volt_data[2]]
+
+    #paths = ["prompts/multi/float/", "prompts/multi/integer/", "prompts/multi/paasax/"]
+    paths = ["prompts/multi/float/", "prompts/multi/paasax/"]
+    filename = "multi_4"
+    labels = ["Capacity (%)", "Temperature (°C)", "RPM (X*100)", "Voltage (%)"]
+
+    # Plot data
+    datagen.plot_multi_tsd(data=raw_data_plot, labels=labels, abstraction_level="raw", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C) / Capacity (%) / Fanspeed (RPM) / Voltage (%)", save=True, location=paths[0])
+    #datagen.plot_multi_tsd(data=rounded_data, labels=labels, abstraction_level="rounded", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C) / Capacity (%) / Fanspeed (RPM) / Voltage (%)", save=True, location=paths[1])
+    datagen.plot_multi_tsd(data=paasax_data, labels=labels, abstraction_level="paasax", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C) / Capacity (%) / Fanspeed (RPM) / Voltage (%)", save=True, location=paths[1])
+
+    sax_string = [datagen.get_sax_string({"data": paasax_data[0]}), datagen.get_sax_string({"data": paasax_data[1]}), datagen.get_sax_string({"data": paasax_data[2]}), datagen.get_sax_string({"data": paasax_data[3]})]
+
+    # Write data to json files
+    config.write_prompt_json(data={"data_1": temp_data[0], "data_2": cap_data[0], "data_3": rpm_data[0], "data_4": volt_data[0]}, path=f"{paths[0]}{filename}_test.json")
+    #config.write_prompt_json(data={"data_1": temp_data[1], "data_2": cap_data[1], "data_3": rpm_data[1], "data_4": volt_data[1]}, path=f"{paths[1]}{filename}_test.json")
+    config.write_prompt_json(data={"data_1": sax_string[1], "data_2": sax_string[0], "data_3": sax_string[2], "data_4": sax_string[3]}, path=f"{paths[1]}{filename}_test.json")
+
+
+def _generate_multi_5_data():
+    n_instances, interval_sec, time = 300, 1, datetime.now()
+    temp_data = datagen.generate_temperature_tsd(n_instances=n_instances, interval_sec=interval_sec, time=time)
+    cap_data = datagen.generate_capacity_tsd(n_instances=n_instances, interval_sec=interval_sec, time=time)
+    rpm_data = datagen.generate_fanspeed_tsd(n_instances=n_instances, interval_sec=interval_sec, time=time)
+    volt_data = datagen.generate_voltage_tsd(n_instances=n_instances, interval_sec=interval_sec, time=time)
+    roomtemp_data = datagen.generate_roomtemp_tsd(n_instances=n_instances, interval_sec=interval_sec, time=time)
+    raw_data = [cap_data[0], temp_data[0], rpm_data[0], volt_data[0], roomtemp_data[0]]
+    raw_data_plot = [cap_data[0], temp_data[0], rpm_data[3], volt_data[3], roomtemp_data[0]]
+    #rounded_data = [cap_data[1], temp_data[1], rpm_data[1], volt_data[1], roomtemp_data[1]]
+    paasax_data = [cap_data[2], temp_data[2], rpm_data[2], volt_data[2], roomtemp_data[2]]
+
+    #paths = ["prompts/multi/float/", "prompts/multi/integer/", "prompts/multi/paasax/"]
+    paths = ["prompts/multi/float/", "prompts/multi/paasax/"]
+    filename = "multi_5"
+    labels = ["Capacity (%)", "Temperature (°C)", "RPM (X*100)", "Voltage (%)", "Room Temperature (°C)"]
+
+    # Plot data
+    datagen.plot_multi_tsd(data=raw_data_plot, labels=labels, abstraction_level="raw", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C) / Capacity (%) / Fanspeed (RPM) / Voltage (%) / Room Temperature (°C)", save=True, location=paths[0])
+    #datagen.plot_multi_tsd(data=rounded_data, labels=labels, abstraction_level="rounded", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C) / Capacity (%) / Fanspeed (RPM) / Voltage (%) / Room Temperature (°C)", save=True, location=paths[1])
+    datagen.plot_multi_tsd(data=paasax_data, labels=labels, abstraction_level="paasax", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C) / Capacity (%) / Fanspeed (RPM) / Voltage (%) / Room Temperature (°C)", save=True, location=paths[1])
+
+    sax_string = [datagen.get_sax_string({"data": paasax_data[0]}), datagen.get_sax_string({"data": paasax_data[1]}), datagen.get_sax_string({"data": paasax_data[2]}), datagen.get_sax_string({"data": paasax_data[3]}), datagen.get_sax_string({"data": paasax_data[4]})]
+
+    # Write data to json files
+    config.write_prompt_json(data={"data_1": temp_data[0], "data_2": cap_data[0], "data_3": rpm_data[0], "data_4": volt_data[0], "data_5": roomtemp_data[0]}, path=f"{paths[0]}{filename}_test.json")
+    #config.write_prompt_json(data={"data_1": temp_data[1], "data_2": cap_data[1], "data_3": rpm_data[1], "data_4": volt_data[1], "data_5": roomtemp_data[1]}, path=f"{paths[1]}{filename}_test.json")
+    config.write_prompt_json(data={"data_1": sax_string[1], "data_2": sax_string[0], "data_3": sax_string[2], "data_4": sax_string[3], "data_5": sax_string[4]}, path=f"{paths[1]}{filename}_test.json")
+
+###########################################################
+
+def generate_data(random: bool = False, temperature: bool = False, sequence: bool = False, cpu_temp_cap_tsd: bool = False, multi_3_tsd: bool = False, multi_4_tsd: bool = False, multi_5_tsd: bool = False):
     if random:
         _generate_random_data()
 
@@ -140,6 +200,12 @@ def generate_data(random: bool = False, temperature: bool = False, sequence: boo
 
     if multi_3_tsd:
         _generate_multi_3_data()
+
+    if multi_4_tsd:
+        _generate_multi_4_data()
+
+    if multi_5_tsd:
+        _generate_multi_5_data()
 
 ####################################################################
 ### GENERATE PROMPTS
@@ -287,5 +353,5 @@ if __name__ == "__main__":
         one_by_one_test()
         None
     else:
-        generate_data(multi_3_tsd=True)
+        generate_data(multi_5_tsd=True)
         None
