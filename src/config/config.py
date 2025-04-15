@@ -146,7 +146,7 @@ def get_models(large: bool, medium: bool, small: bool) -> list[str]:
 ### READ PROMPT FILES
 ####################################################################
 
-def read_prompt(path: str) -> tuple[str, str, str, dict, str] | tuple[str, str, str, dict, str, dict, str] | None:
+def read_prompt(path: str) -> tuple[str, str, dict, str] | tuple[str, list[str], list[dict], str] | None:
     '''
     Reads the prompt file in the specified path.
 
@@ -167,10 +167,16 @@ def read_prompt(path: str) -> tuple[str, str, str, dict, str] | tuple[str, str, 
     
     # TODO dynamically get the number of data contexts and data
     elif level == "multi":
+        number_of_datasets = prompt_info.get("datasets")
+        print(f"[DEBUG] number of datasets: {number_of_datasets}")
         #desc = prompt_info.get("description")
-        task, context_1, data_1, context_2, data_2, output = prompt_data.get("task"), prompt_data.get("data_context_1"), prompt_data.get("data_1"), prompt_data.get("data_context_2"), prompt_data.get("data_2"), prompt_data.get("desired_output")
-        print(f"\n[READING]\n[path={path}]\nTask: {task}\nContext [1]: {context_1}\nData [1]: {data_1}\nContext [2]: {context_2}\nData [2]: {data_2}\nDesired Output: {output}\n")
-        return task, context_1, data_1, context_2, data_2, output
+        task = prompt_data.get("task")
+        output = prompt_data.get("desired_output")
+        context, data = [], []
+        for i in range(1, number_of_datasets + 1):
+            context.append(prompt_data.get(f"data_context_{i}"))
+            data.append(prompt_data.get(f"data_{i}"))
+        return task, context, data, output
     else:
         return None
     

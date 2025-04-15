@@ -612,6 +612,7 @@
     "prompt_info": {
         "description": "cpu_temp_load",
         "level": "multi",
-        "representation": "raw"
+        "representation": "raw",
+        "datasets": 2
     }
 }

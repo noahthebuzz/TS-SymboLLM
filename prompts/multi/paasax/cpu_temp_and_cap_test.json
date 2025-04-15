@@ -32,6 +32,7 @@
     "prompt_info": {
         "description": "cpu_temp_load",
         "level": "multi",
-        "representation": "paasax"
+        "representation": "paasax",
+        "datasets": 2
     }
 }

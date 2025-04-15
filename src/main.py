@@ -103,6 +103,7 @@ def _generate_multi_3_data():
     cap_data = datagen.generate_capacity_tsd(n_instances=n_instances, interval_sec=interval_sec, time=time)
     rpm_data = datagen.generate_fanspeed_tsd(n_instances=n_instances, interval_sec=interval_sec, time=time)
     raw_data = [cap_data[0], temp_data[0], rpm_data[0]]
+    raw_data_plot = [cap_data[0], temp_data[0], rpm_data[3]]
     #rounded_data = [cap_data[1], temp_data[1], rpm_data[1]]
     paasax_data = [cap_data[2], temp_data[2], rpm_data[2]]
 
@@ -112,9 +113,9 @@ def _generate_multi_3_data():
     labels = ["Capacity (%)", "Temperature (°C)", "RPM (X*100)"]
 
     # Plot data
-    datagen.plot_multi_tsd(data=raw_data, labels=labels, abstraction_level="raw", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C) / Capacity (%) / RPM", save=True, location=paths[0])
-    #datagen.plot_multi_tsd(data=rounded_data, labels=labels, abstraction_level="rounded", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C) / Capacity (%) / RPM", save=True, location=paths[1])
-    datagen.plot_multi_tsd(data=paasax_data, labels=labels, abstraction_level="paasax", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C) / Capacity (%) / RPM", save=True, location=paths[1])
+    datagen.plot_multi_tsd(data=raw_data_plot, labels=labels, abstraction_level="raw", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C) / Capacity (%) / Fanspeed (RPM)", save=True, location=paths[0])
+    #datagen.plot_multi_tsd(data=rounded_data, labels=labels, abstraction_level="rounded", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C) / Capacity (%) / Fanspeed (RPM)", save=True, location=paths[1])
+    datagen.plot_multi_tsd(data=paasax_data, labels=labels, abstraction_level="paasax", title=filename, xlabel="Time (HH:MM:SS)", ylabel="Temperature (°C) / Capacity (%) / Fanspeed (RPM)", save=True, location=paths[1])
 
     sax_string = [datagen.get_sax_string({"data": paasax_data[0]}), datagen.get_sax_string({"data": paasax_data[1]}), datagen.get_sax_string({"data": paasax_data[2]})]
 
@@ -149,8 +150,15 @@ def generate_prompt(path: str, level: str) -> str:
         task, context, data, output = config.read_prompt(path=path)
         return f"Task:\n{task}\nData context:\n{context}\nData:\n{data}\nDesired output format:\n{output}\n"
     else:
-        task, context_1, data_1, context_2, data_2, output = config.read_prompt(path=path)
-        return f"Task:\n{task}\nData 1 context:\n{context_1}\nData 1:\n{data_1}\nData 2 context:\n{context_2}\nData 2:\n{data_2}\nDesired output format:\n{output}\n"
+        task, context, data, output = config.read_prompt(path=path)
+        prompt = f"Task:\n{task}"
+        for i in range(len(context)):
+            string_context_extension = f"Data {i+1} context:\n{context[i]}\n"
+            string_data_extension = f"Data {i+1}:\n{data[i]}\n"
+            prompt = f"{prompt}{string_context_extension}{string_data_extension}"
+        prompt = f"{prompt}\nDesired output format:\n{output}"
+        print(f"[DEBUG] prompt\n{prompt}")
+        return prompt
 
 ####################################################################
 ### INCREASE LOGS COUNTER
@@ -275,6 +283,7 @@ if __name__ == "__main__":
     if os.getlogin() == "dbisai":
         #generate_data(random=True, temperature=True, sequence=True, multi_tsd=True)
         #main()
+        #generate_data(multi_3_tsd=True)
         one_by_one_test()
         None
     else:

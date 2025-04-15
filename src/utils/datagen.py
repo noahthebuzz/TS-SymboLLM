@@ -239,11 +239,12 @@ def generate_fanspeed_tsd(n_instances: int, interval_sec: int, time: datetime = 
                 decrease_start=round(n_instances//2.125),
                 final_rpm=10.0,
     )
-    tsd_raw = dict(zip(timestamps, data))
+    tsd_raw = dict(zip(timestamps, [100 * x for x in data]))
+    tsd_raw_plot = dict(zip(timestamps, data))
     rounded_data = np.around(data, 0).tolist()
     tsd_rounded = dict(zip(timestamps, rounded_data))
     tsd_sax = approximate_tsd(data=data, timestamps=timestamps)
-    return [tsd_raw, tsd_rounded, tsd_sax]
+    return [tsd_raw, tsd_rounded, tsd_sax, tsd_raw_plot]
 
 ###########################################################
 
