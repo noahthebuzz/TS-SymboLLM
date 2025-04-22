@@ -1,23 +1,21 @@
-Multi 3 Datensatz:
-Temp - CPU Load - Fanspeed
+Multi 1 Datensatz:
+Temp
 #########################################################
-Observation: [10]
+Observation: [6]
 
-[+1] Erkennt alle Elemente in den Listen
-[+1.5] (+0.5 each) Identifiziert Daten richtig -> data_1 temp, data_2 cpu load, data_3 fanspeed
+[+1] Erkennt (nur) alle Elemente in den Listen
+[+0.5] Identifiziert Daten richtig -> data_1 temp
 [+1] Erkennt Zeitdaten richtig (5min Zeitraum)
-[+1.5] (+0.5 each) Erkennt maximal/minimal Werte der Daten
+[+0.5] Erkennt maximal/minimal Werte der Daten
 [+1] Erkennt stabile Phase am Anfang
-[+1] Erkennt Anstieg der Temp nach CPU load Sprung
+[+1] Erkennt Anstieg der Temp
 [+1] Erkennt Temp steigt nur/sinkt nicht mehr ab
-[+1] Erkennt Cpu load sinkt wieder auf normal Niveau an
-[+1] Erkennt Fanspeed sinkt ab
 
 ###################################################################
 Explanation: [10]
 
-[+2] Erkennt Daten korrelieren miteinander
-[+2] Erkennt Temp Anstieg durch andere Daten begründet (erhöhte Auslastung, zu geringe Kühlung durch Fans)
+[+2] Erkennt in stabiler Phase läuft alles optimal
+[+2] Erkennt Temp Anstieg durch andere Daten begründet (beliebig)
 [+2] Erkennt Möglichkeit für Fehler des Kühlers / Verzögerung des Kühlers
 [+2] Erkennt externe Faktoren (Raumtemperatur, etc.) als Problem
 [+2] Erkennt Möglichkeit für Error in Soft/Hardware
