@@ -15,7 +15,7 @@ from tslearn.preprocessing import TimeSeriesScalerMeanVariance
 # Multi TSD Plot with each TSD in a separate subplot and a shared y-axis
 def plot_single_tsd(data: dict, abstraction_level: str, title: str, xlabel: str, ylabel: str, save: bool = False, location: str = "./plots/") -> None:
     fig, ax = plt.subplots(figsize=(15, 7))
-    ax.plot(data.keys(), data.values(), marker='o', color='b')
+    ax.plot(data.keys(), data.values(), marker='o', color='r')
     ax.set_title(title + f" ({abstraction_level})")
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)

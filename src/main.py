@@ -349,8 +349,10 @@ if __name__ == "__main__":
     if os.getlogin() == "dbisai":
         #generate_data(random=True, temperature=True, sequence=True, multi_tsd=True)
         #main()
-        one_by_one_test()
+        #one_by_one_test()
+        generate_data(temperature=True)
         None
     else:
-        generate_data(multi_5_tsd=True)
+        #generate_data(multi_5_tsd=True)
+        generate_data(temperature=True)
         None
