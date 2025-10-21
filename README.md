@@ -1,4 +1,4 @@
-[Installation Guide](#installation-guide) [Usage](#usage)
+Start with the installation: [Installation Guide](#installation-guide)<br> or jump to the guide instead: [Usage](#usage)
 
 # Ordner-Struktur
 LLM_ERROR/
@@ -12,7 +12,48 @@ LLM_ERROR/
     LICENSE
     .gitignore
     .gitattributes
-    
+
+# Installation Guide
+### create project folder
+```bash
+$ mkdir %project/folder%
+```
+
+### change directory to project folder
+```bash
+$ cd %project/folder%
+```
+
+### clone the repository
+```bash
+$ git clone %ssh_link%
+```
+
+### change to repository directory
+```bash
+$ cd %reponame%
+```
+
+### create virtual environment (venv)
+(.venv can be replaced by whatever name; maybe you have to use python3 instead of python)
+```bash
+$ python -m venv .venv
+```
+
+### activate virtual environment
+```bash
+$ source .venv/bin/activate
+```
+
+### install requirements.txt
+```bash
+$ pip install -r requirements.txt
+```
+
+### If everything went as expected, you should be able to start the programm now with:
+```bash
+$ python3 main.py
+``` 
     
 # Usage
 ## Start the LLM Error Handler
@@ -70,54 +111,14 @@ $ funcllama --reload params
 ```
 
 ## Run (bisher nur Generate; kein Chat)
--> List models
--> Enter model to use
--> List paramfiles
--> Enter params to use
--> List promptfiles
--> Enter promptfile to use
--> Enter name of logfile (can include folder %folder/name%; default: folder -> current date, name -> current time)
+-> List models<br>
+-> Enter model to use<br>
+-> List paramfiles<br>
+-> Enter params to use<br>
+-> List promptfiles<br>
+-> Enter promptfile to use<br>
+-> Enter name of logfile (can include folder %folder/name%; default: folder -> current date, name -> current time)<br>
 -> Output generation
 
 
-# Installation Guide
-### create project folder
-```bash
-$ mkdir %project/folder%
-```
 
-### change directory to project folder
-```bash
-$ cd %project/folder%
-```
-
-### clone the repository
-```bash
-$ git clone %ssh_link%
-```
-
-### change to repository directory
-```bash
-$ cd %reponame%
-```
-
-### create virtual environment (venv)
-(.venv can be replaced by whatever name; maybe you have to use python3 instead of python)
-```bash
-$ python -m venv .venv
-```
-
-### activate virtual environment
-```bash
-$ source .venv/bin/activate
-```
-
-### install requirements.txt
-```bash
-$ pip install -r requirements.txt
-```
-
-### If everything went as expected, you should be able to start the programm now with:
-```bash
-$ python3 main.py
-```
