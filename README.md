@@ -1,17 +1,21 @@
+# TS-SymboLLM
+
 Start with the installation: [Installation Guide](#installation-guide)<br> or jump to the guide instead: [Usage](#usage)
 
 # Ordner-Struktur
-LLM_ERROR/
-    .venv/
-    logs/
-    prompts/
-    datasets/
-    params/
-    src/
-    app.py
-    LICENSE
-    .gitignore
-    .gitattributes
+LLM_ERROR/<br>
+    .venv/<br>
+    logs/<br>
+    prompts/<br>
+    datasets/<br>
+    params/<br>
+    src/<br>
+    app.py<br>
+    LICENSE<br>
+    .gitignore<br>
+    .gitattributes<br>
+    README.md<br>
+    requirements.txt<br>
 
 # Installation Guide
 ### create project folder
