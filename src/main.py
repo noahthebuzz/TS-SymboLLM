@@ -356,3 +356,25 @@ if __name__ == "__main__":
         #generate_data(multi_5_tsd=True)
         generate_data(temperature=True)
         None
+
+
+# Anfangstext "TS-SymboLLM", was kann er, was tut er, help?, etc.
+# --help          - Aufzählung mit kurzer Beschreibung der einzelnen Funktionen
+# --list %arg%    - Aufzählung der Elemente eines Ordners
+#                   arg: models, datasets, prompts, params
+# --reload %arg%  - Neues Laden eines Ordners
+#                   arg: models, datasets, prompts, params
+# --pull %args%   - Herunterladen eines in Ollama zur Verfügung stehenden LLMs
+#                   args: Name/Bezeichner eines/mehrerer LMMs in Ollama
+# --delete %args% - Löschen eines heruntergeladenen Ollama-Models
+#                   args: Name/Bezeichner eines/mehrerer LMMs in Ollama
+#
+# --run %args%    - Start der Generation einer Antwort
+#                   args: no-args, -m %model% -p %param% -ds %dataset% -pr %prompt%
+# 
+# 
+# 
+# 
+# 
+# 
+#  
