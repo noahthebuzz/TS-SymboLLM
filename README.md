@@ -18,7 +18,7 @@ LLM_ERROR/
 ## Start the LLM Error Handler
 
 '''
-$ python3 main.py
+    $ python3 main.py
 '''
 
 ## LLMs (anzeigen, herunterladen, löschen, ...)
