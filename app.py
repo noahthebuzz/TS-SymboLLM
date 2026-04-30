@@ -51,9 +51,10 @@ def _coerce_float(value: object, field: str) -> float:
 
 
 def _format_value(value: float) -> str:
-    if value.is_integer():
-        return str(int(value))
-    return f"{value:.3f}".rstrip("0").rstrip(".")
+    numeric = float(value)
+    if numeric.is_integer():
+        return str(int(numeric))
+    return f"{numeric:.3f}".rstrip("0").rstrip(".")
 
 
 def _downsample(points: List[Tuple[str, float]], max_points: int | None) -> List[Tuple[str, float]]:
@@ -140,7 +141,7 @@ def _load_json(path: str) -> Dict[str, List[Tuple[str, float]]]:
         return {"series_1": _series_from_mapping("series_1", data)}
 
     if isinstance(data, list):
-        series_data: Dict[str, List[Tuple[str, float]]] = {}
+        series_data = {}
         for entry in data:
             if not isinstance(entry, dict):
                 continue
