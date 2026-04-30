@@ -50,7 +50,7 @@ def _coerce_float(value: object, field: str) -> float:
         raise ValueError(f"Value for '{field}' is not numeric: {value!r}") from None
 
 
-def _format_value(value: float) -> str:
+def _format_value(value: float | int) -> str:
     numeric = float(value)
     if numeric.is_integer():
         return str(int(numeric))
