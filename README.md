@@ -1,128 +1,149 @@
 # TS-SymboLLM
 
-Start with the installation: [Installation Guide](#installation-guide)<br> or jump to the guide instead: [Usage](#usage)
+Local LLM showcase for interpreting time-series data. This repository lets you:
 
-# Ordner-Struktur
-LLM_ERROR/<br>
-    .venv/<br>
-    logs/<br>
-    prompts/<br>
-    datasets/<br>
-    params/<br>
-    src/<br>
-    app.py<br>
-    LICENSE<br>
-    .gitignore<br>
-    .gitattributes<br>
-    README.md<br>
-    requirements.txt<br>
+- Run a **local Ollama model** against your own CSV/JSON time series.
+- Try **built-in example datasets** without any extra setup.
+- Customize prompts for different analysis tasks (anomalies, summaries, forecasts, etc.).
 
-# Installation Guide
-### create project folder
+## Quickstart
+
+1. Install and start Ollama (local LLM runtime).
+2. Pull a model (example uses `qwen2.5:7b`):
+
 ```bash
-$ mkdir %project/folder%
+ollama pull qwen2.5:7b
 ```
 
-### change directory to project folder
+3. Create a virtual environment and install dependencies:
+
 ```bash
-$ cd %project/folder%
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
-### clone the repository
+4. Run an example:
+
 ```bash
-$ git clone %ssh_link%
+python app.py --example temperature --model qwen2.5:7b
 ```
 
-### change to repository directory
+List the available example datasets:
+
 ```bash
-$ cd %reponame%
+python app.py --list-examples
 ```
 
-### create virtual environment (venv)
-(.venv can be replaced by whatever name; maybe you have to use python3 instead of python)
+## Use your own data
+
+Provide a CSV or JSON file with time series data:
+
 ```bash
-$ python -m venv .venv
+python app.py --data /path/to/your/data.csv --model qwen2.5:7b
 ```
 
-### activate virtual environment
+Add a custom prompt template:
+
 ```bash
-$ source .venv/bin/activate
+python app.py --data /path/to/your/data.json \
+  --prompt examples/prompts/interpretation.txt \
+  --question "Summarize trends and highlight anomalies."
 ```
 
-### install requirements.txt
-```bash
-$ pip install -r requirements.txt
+## Supported data formats
+
+### CSV (single series)
+
+```csv
+timestamp,value
+2024-03-01T08:00:00,48.2
+2024-03-01T08:05:00,48.9
 ```
 
-### If everything went as expected, you should be able to start the programm now with:
-```bash
-$ python3 main.py
-``` 
-    
-# Usage
-## Start the LLM Error Handler
-```bash
-$ python3 main.py
+### CSV (multiple series)
+
+Include a `series` (or `name`) column to group values:
+
+```csv
+timestamp,series,value
+2024-03-01T08:00:00,cpu_utilization,32.5
+2024-03-01T08:00:00,cpu_temperature,46.1
 ```
 
-## LLMs (anzeigen, herunterladen, löschen, ...)
--> vorhandene Modelle anzeigen
-```bash
-$ funcllama --list models
+### JSON (single series)
+
+```json
+{
+  "data": {
+    "2024-03-01T08:00:00": 48.2,
+    "2024-03-01T08:05:00": 48.9
+  }
+}
 ```
 
--> via ollama herunterladen
-```bash
-$ funcllama --pull %_ollama.model.name_%
+### JSON (multiple series)
+
+```json
+{
+  "series": [
+    {
+      "name": "cpu_utilization_percent",
+      "data": {
+        "2024-03-01T08:00:00": 32.5,
+        "2024-03-01T08:05:00": 35.2
+      }
+    },
+    {
+      "name": "cpu_temperature_c",
+      "data": {
+        "2024-03-01T08:00:00": 46.1,
+        "2024-03-01T08:05:00": 46.8
+      }
+    }
+  ]
+}
 ```
 
--> vorhandenes Modell löschen
+## Prompt customization
+
+Prompt templates are plain text files with placeholders:
+
+- `{question}` — your analysis request
+- `{summary}` — auto-generated series stats
+- `{data}` — sampled data points
+
+Example:
+
 ```bash
-$ funcllama --delete %_ollama.model.name_%
+python app.py --example cpu \
+  --prompt examples/prompts/interpretation.txt \
+  --question "Explain the relationship between utilization and temperature."
 ```
 
-## Datensätze 
--> vorhandene Datensätze anzeigen
+## Useful CLI options
+
 ```bash
-$ funcllama --list datasets
+python app.py --help
 ```
 
--> Datensätze neu laden
-```bash
-$ funcllama --reload datasets
+- `--max-points`: limit how many points per series are included in the prompt (defaults to 120).
+- `--show-prompt`: print the final prompt before sending it to the model.
+- `--output`: write the model response to a file.
+
+## Repository layout
+
+```
+.
+├── app.py                  # CLI entry point
+├── examples/
+│   ├── data/                # Example datasets
+│   └── prompts/             # Example prompt templates
+└── src/                     # Original research utilities (data generation, logging, etc.)
 ```
 
-## Promptfiles
--> vorhandene Promptfiles anzeigen
-```bash
-$ funcllama --list prompts
-```
+## Notes
 
--> Prompts neu laden
-```bash
-$ funcllama --reload prompts
-```
-
-## Parameter
--> vorhandene Parameterfiles anzeigen
-```bash
-$ funcllama --list params
-```
-
--> Parameterfiles neu laden
-```bash
-$ funcllama --reload params
-```
-
-## Run (bisher nur Generate; kein Chat)
--> List models<br>
--> Enter model to use<br>
--> List paramfiles<br>
--> Enter params to use<br>
--> List promptfiles<br>
--> Enter promptfile to use<br>
--> Enter name of logfile (can include folder %folder/name%; default: folder -> current date, name -> current time)<br>
--> Output generation
-
-
-
+- This project expects a **local** Ollama server to be running.
+- For large datasets, use `--max-points` to keep prompts small.
+- The example files are intentionally compact for quick testing.

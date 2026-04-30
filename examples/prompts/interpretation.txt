@@ -1,0 +1,16 @@
+You are a time-series analyst. Use the data to answer the question below.
+
+Question:
+{question}
+
+Summary:
+{summary}
+
+Data points:
+{data}
+
+Return a concise response with:
+- A one-sentence overview
+- 2-4 key insights
+- Any anomalies or inflection points
+- One recommended next step
