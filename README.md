@@ -131,6 +131,15 @@ python app.py --help
 - `--show-prompt`: print the final prompt before sending it to the model.
 - `--output`: write the model response to a file.
 
+## Configuration
+
+Shipped defaults (model tiers, Ollama sampling presets) live in
+`ts_symbollm/config/config.json`. To override them without editing the
+package, put your own JSON file at `~/.config/ts-symbollm/config.json`, or
+point the `TS_SYMBOLLM_CONFIG` environment variable at any file — a
+top-level section you provide (e.g. `"models"`) replaces that section
+entirely rather than merging individual keys.
+
 ## Repository layout
 
 ```

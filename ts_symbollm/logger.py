@@ -4,30 +4,7 @@ from datetime import datetime
 from .config import config
 
 
-def determine_usr() -> str:
-    usr = os.getlogin()
-    return usr
-
-
-def format_logs_counter(counter: int) -> str:
-    counter = str(counter)
-    return '0' * (6 - len(counter)) + counter
-
-
-def log(model_name: str, ollama_params: dict, prompt_path: str, prompt_type: str, data_representation: str, prompt: str, response: str, execution_time: float, test: bool = False):
-    usr = determine_usr()
-    config_data = config._get_config_content(setup_usr=usr, logs=True)
-
-    if config_data is None:
-        usr_setup, logs = None, 0
-    else:
-        if test:
-            usr_setup, logs = config_data.get(usr), -1
-        else:
-            usr_setup, logs = config_data.get(usr), config_data.get("logs")
-        
-    logs_string = format_logs_counter(logs)
-
+def log(model_name: str, ollama_params: dict, prompt_path: str, prompt_type: str, data_representation: str, prompt: str, response: str, execution_time: float):
     large_models = config.get_models(True, False, False)
     medium_models = config.get_models(False, True, False)
     small_models = config.get_models(False, False, True)
@@ -38,14 +15,16 @@ def log(model_name: str, ollama_params: dict, prompt_path: str, prompt_type: str
          model_size = "medium"
     elif model_name in small_models:
          model_size = "small"
+    else:
+         model_size = "unknown"
 
     params = ""
     if ollama_params is None:
         params = "default"
     else:
-        params = "rational" 
+        params = "rational"
 
-    dirs = f"logs/{usr}/{logs_string}/{prompt_type}/{model_size}/{model_name}/{params}/{data_representation}"
+    dirs = f"logs/{prompt_type}/{model_size}/{model_name}/{params}/{data_representation}"
     os.makedirs(dirs, exist_ok=True)
 
     time = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
@@ -76,12 +55,6 @@ def log(model_name: str, ollama_params: dict, prompt_path: str, prompt_type: str
                 else:
                      log_file.write(f"Default\n")
                      log_file.write(f"-------------------------------------------\n\n")
-                if usr_setup is not None:
-                    log_file.write(f"Processor: {usr_setup['Processor']}\n")
-                    log_file.write(f"RAM: {usr_setup['RAM']}\n")
-                    log_file.write(f"GPU: {usr_setup['GPU']}\n")
-                    log_file.write(f"OS: {usr_setup['OS']}\n\n")
-                    log_file.write(f"-------------------------------------------\n\n")
                 log_file.write(f"Path: {prompt_path}\n")
                 log_file.write(f"-------------------------------------------\n\n")
                 log_file.write(f"Prompt: {data_representation}\n{prompt}\n\n")
@@ -89,15 +62,8 @@ def log(model_name: str, ollama_params: dict, prompt_path: str, prompt_type: str
                 log_file.write(f"Answer:\n{response}\n\n")
                 log_file.write(f"-------------------------------------------\n\n")
                 log_file.write(f"Execution time: {execution_time} seconds\n\n")
-    
-    # Update logs counter
-    #if not test:
-    #    logs += 1
-    #    config.write_json(data={"logs": logs}, path="src/config/config.json", overwrite=False)
+
 
 def log_processing_order(path: str, model: str, counter: int):
     data = {f"{counter}": {"path": path, "model": model}}
     config.write_json(data=data, path="logs/processing_order.json", overwrite=False)
-
-if __name__ == "__main__":
-     print(determine_usr())
