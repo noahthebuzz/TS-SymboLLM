@@ -43,6 +43,23 @@ def _segment_length(segment_length: int | None) -> int:
     return _defaults().get("symbolic_segment_length", DEFAULT_SEGMENT_LENGTH)
 
 
+def resolve_decimal_places(decimal_places: int | None = None) -> int:
+    '''Effective rounded-representation decimal places, resolving the config default if unset.'''
+    return _decimal_places(decimal_places)
+
+
+def resolve_levels(levels: int | None = None) -> int:
+    '''Effective symbolic alphabet size, resolving the config default if unset.'''
+    return _levels(levels)
+
+
+def resolve_num_symbols(n: int, num_symbols: int | None = None, segment_length: int | None = None) -> int:
+    '''Effective PAA segment count for a series of length n, resolving the ceil(n/segment_length) default if unset.'''
+    if num_symbols is not None:
+        return num_symbols
+    return default_num_symbols(n, segment_length)
+
+
 def default_num_symbols(n: int, segment_length: int | None = None) -> int:
     '''
     Default number of PAA segments for a series of length n: one symbol per
