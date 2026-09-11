@@ -51,8 +51,3 @@ def log(model_name: str, ollama_params: dict, prompt_path: str, prompt_type: str
                 log_file.write(f"Answer:\n{response}\n\n")
                 log_file.write(f"-------------------------------------------\n\n")
                 log_file.write(f"Execution time: {execution_time} seconds\n\n")
-
-
-def log_processing_order(path: str, model: str, counter: int):
-    data = {f"{counter}": {"path": path, "model": model}}
-    config.write_json(data=data, path="logs/processing_order.json", overwrite=False)

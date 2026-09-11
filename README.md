@@ -159,6 +159,32 @@ Every run automatically saves a diagram of the input series to `./plots/`
 (a single figure, with all series overlaid and a legend for multi-series
 data) — no extra flag needed.
 
+## Benchmarking
+
+`ts-symbollm benchmark` runs a model x representation x dataset matrix in
+one non-interactive command and writes one structured row per run:
+
+```bash
+ts-symbollm benchmark \
+  --data temperature,cpu \
+  --model qwen2.5:7b,mistral:7b \
+  --representation raw,rounded,symbolic \
+  --results ./results/results.jsonl
+```
+
+- `--data`: comma-separated dataset paths and/or bundled example names.
+- `--model`: comma-separated model names to sweep.
+- `--representation`: comma-separated `raw`/`rounded`/`symbolic` values to sweep (default `raw`).
+- `--params`: comma-separated Ollama sampling-parameter presets to sweep: `default`, `rational`, `creative` (default `default`).
+- `--results`: path to the structured results file — JSON Lines or CSV, inferred from the extension (default `./results/results.jsonl`). Loadable with `pandas.read_json(path, lines=True)` or `csv.DictReader`.
+- `--score`: enable automatic scoring for datasets with known ground truth (currently just the bundled `temperature` example — see `ts_symbollm/scoring.py`).
+- `--paa-segments`, `--alphabet-size`, `--plot-dir`, `--no-plot`: same meaning as the single-run flags above; a diagram is still saved automatically per dataset/representation combination (not per model or params preset).
+
+Each combination in the matrix produces one row with the model, model
+tier, representation, dataset, sampling params, prompt, response,
+latency, and (if `--score` applies) a score and notes. A short summary
+table prints at the end of the run.
+
 ## Model backends
 
 The tool talks to models through a small `Backend` interface
@@ -191,7 +217,7 @@ that section entirely rather than merging individual keys.
 │   ├── prompts/             # Example prompt templates
 │   └── showcase/            # Optional synthetic-data demo (not part of the package)
 ├── tests/                   # Unit tests
-└── ts_symbollm/             # Installable package (CLI, config, representation, plotting, legacy harness)
+└── ts_symbollm/             # Installable package (CLI, benchmark runner, backends, config, representation, plotting)
 ```
 
 ## Installing as a package
