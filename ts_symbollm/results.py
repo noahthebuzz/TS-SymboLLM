@@ -28,6 +28,8 @@ class ResultRecord:
     prompt: str
     response: str
     latency_seconds: float
+    score: Optional[float] = None
+    score_notes: Optional[str] = None
 
     @classmethod
     def create(
@@ -41,8 +43,15 @@ class ResultRecord:
         latency_seconds: float,
         model_size: Optional[str] = None,
         timestamp: Optional[str] = None,
+        score: Optional[float] = None,
+        score_notes: Optional[str] = None,
     ) -> "ResultRecord":
-        '''Convenience constructor: resolves model_size/timestamp if not given.'''
+        '''
+        Convenience constructor: resolves model_size/timestamp if not
+        given. `score`/`score_notes` are optional -- scoring (see
+        scoring.py) is an opt-in step; a run with no scorer just leaves
+        these as None.
+        '''
         return cls(
             timestamp=timestamp or datetime.now(timezone.utc).isoformat(),
             model=model,
@@ -53,6 +62,8 @@ class ResultRecord:
             prompt=prompt,
             response=response,
             latency_seconds=latency_seconds,
+            score=score,
+            score_notes=score_notes,
         )
 
 
