@@ -5,18 +5,7 @@ from .config import config
 
 
 def log(model_name: str, ollama_params: dict, prompt_path: str, prompt_type: str, data_representation: str, prompt: str, response: str, execution_time: float):
-    large_models = config.get_models(True, False, False)
-    medium_models = config.get_models(False, True, False)
-    small_models = config.get_models(False, False, True)
-
-    if model_name in large_models:
-         model_size = "large"
-    elif model_name in medium_models:
-         model_size = "medium"
-    elif model_name in small_models:
-         model_size = "small"
-    else:
-         model_size = "unknown"
+    model_size = config.resolve_model_size(model_name)
 
     params = ""
     if ollama_params is None:
