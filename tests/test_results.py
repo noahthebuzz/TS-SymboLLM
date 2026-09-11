@@ -90,3 +90,50 @@ def test_writer_creates_parent_directories(tmp_path):
     writer = ResultsWriter(str(path))
     writer.write(_make_record(0))
     assert path.exists()
+
+
+def test_score_fields_default_to_none_when_scoring_disabled():
+    record = _make_record(0)
+    assert record.score is None
+    assert record.score_notes is None
+
+
+def test_score_fields_round_trip_through_jsonl(tmp_path):
+    path = tmp_path / "results.jsonl"
+    writer = ResultsWriter(str(path))
+    record = ResultRecord.create(
+        model="qwen2.5:7b",
+        representation="raw",
+        dataset_id="d",
+        params=None,
+        prompt="p",
+        response="r",
+        latency_seconds=1.0,
+        score=1.0,
+        score_notes="matched all expected cues",
+    )
+    writer.write(record)
+    row = json.loads(path.read_text(encoding="utf-8").splitlines()[0])
+    assert row["score"] == 1.0
+    assert row["score_notes"] == "matched all expected cues"
+
+
+def test_score_fields_round_trip_through_csv(tmp_path):
+    path = tmp_path / "results.csv"
+    writer = ResultsWriter(str(path))
+    record = ResultRecord.create(
+        model="qwen2.5:7b",
+        representation="raw",
+        dataset_id="d",
+        params=None,
+        prompt="p",
+        response="r",
+        latency_seconds=1.0,
+        score=0.0,
+        score_notes="missing cue",
+    )
+    writer.write(record)
+    with open(path, newline="", encoding="utf-8") as file:
+        row = next(csv.DictReader(file))
+    assert row["score"] == "0.0"
+    assert row["score_notes"] == "missing cue"
