@@ -134,6 +134,8 @@ def approximate_tsd(
     to; if not given, it defaults to `ceil(len(data) / segment_length)`.
     `levels` is the SAX alphabet size / quantization depth.
     '''
+    if not data:
+        return {}
     if num_symbols is None:
         num_symbols = default_num_symbols(len(data), segment_length)
     levels = _levels(levels)

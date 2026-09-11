@@ -85,3 +85,22 @@ def test_multiple_add_series_calls_produce_a_multi_section_prompt():
     assert "Data 2 context:\nTemperature (°C)\n" in prompt
     assert "t0: 30.0" in prompt
     assert "t0: 46.0" in prompt
+
+
+def test_add_series_handles_an_empty_series_for_every_representation():
+    for representation in ("raw", "rounded", "symbolic"):
+        prompt = (
+            PromptBuilder(task="t", desired_output="o")
+            .add_series(context="ctx", points=[], representation=representation)
+            .build()
+        )
+        assert "Data:\n\nDesired output format:" in prompt
+
+
+def test_add_series_handles_a_single_data_point():
+    prompt = (
+        PromptBuilder(task="t", desired_output="o")
+        .add_series(context="ctx", points=[("t0", 42.0)], representation="raw")
+        .build()
+    )
+    assert "t0: 42.0" in prompt

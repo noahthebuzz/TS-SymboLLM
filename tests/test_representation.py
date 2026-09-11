@@ -91,3 +91,41 @@ def test_resolve_num_symbols_honors_explicit_value_regardless_of_length():
 
 def test_resolve_num_symbols_falls_back_to_default_calculation():
     assert repr_mod.resolve_num_symbols(100) == repr_mod.default_num_symbols(100)
+
+
+####################################################################
+### EDGE CASES: empty series / single data point
+####################################################################
+
+def test_to_raw_handles_empty_series():
+    assert repr_mod.to_raw([], []) == {}
+
+
+def test_to_raw_handles_a_single_data_point():
+    assert repr_mod.to_raw([1.0], ["t0"]) == {"t0": 1.0}
+
+
+def test_to_rounded_handles_empty_series():
+    assert repr_mod.to_rounded([], []) == {}
+
+
+def test_to_rounded_handles_a_single_data_point():
+    assert repr_mod.to_rounded([1.6], ["t0"]) == {"t0": 2.0}
+
+
+def test_to_symbolic_handles_empty_series():
+    # Matches to_raw/to_rounded's behavior for empty input, rather than
+    # raising the sklearn "0 feature(s)" error the underlying SAX
+    # transform produces on an empty array.
+    assert repr_mod.to_symbolic([], []) == {}
+
+
+def test_to_symbolic_handles_a_single_data_point():
+    result = repr_mod.to_symbolic([5.0], ["t0"])
+    assert list(result.keys()) == ["t0"]
+    assert isinstance(result["t0"], (int, float))
+
+
+def test_apply_handles_empty_series_for_every_representation():
+    for representation in repr_mod.Representation:
+        assert repr_mod.apply(representation, [], []) == {}
