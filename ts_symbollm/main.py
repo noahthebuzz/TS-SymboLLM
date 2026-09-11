@@ -3,8 +3,8 @@
 import time
 
 from . import logger
+from .backends.ollama import OllamaBackend
 from .config import config
-from .utils import funcllama
 
 
 ####################################################################
@@ -31,6 +31,7 @@ def generate_prompt(path: str, level: str) -> str:
 ####################################################################
 
 def main():
+    backend = OllamaBackend()
 
     # Which model tiers to test — left off by default; callers can flip these on directly.
     models = []
@@ -38,10 +39,10 @@ def main():
 
     if test_large_models or test_medium_models or test_small_models:
         models = config.get_models(large=test_large_models, medium=test_medium_models, small=test_small_models)
-    
+
     # Pull the models
     for model in models:
-        funcllama.pull_ollama_model(model=model)
+        backend.pull(model=model)
     print(f"[MAIN]: number of models = {len(models)}")
 
     params = config.get_ollama_parameter(isRational=True)
@@ -63,14 +64,14 @@ def main():
             start_time = time.time()
             description, level, data_representation = config.read_prompt_info(path=path)
             prompt = generate_prompt(path, level=level)
-            response = funcllama.generate_response(model=model, prompt=prompt, params=params)
-            response_string = funcllama.print_response(response)
+            response_string = backend.generate(model=model, prompt=prompt, params=params)
             execution_time = time.time() - start_time
             logger.log(model_name=model, ollama_params=params, prompt_type=description, data_representation=data_representation, prompt=prompt, response=response_string, execution_time=execution_time)
             processing_counter += 1
 
 
 def one_by_one_test():
+    backend = OllamaBackend()
     models = config.get_models(large=True, medium=True, small=True)
     models.sort()
     params = [config.get_ollama_parameter(isRational=True), config.get_ollama_parameter(isRational=False)]
@@ -121,8 +122,7 @@ def one_by_one_test():
         start_time = time.time()
         description, level, data_representation = config.read_prompt_info(path=prompt_path)
         prompt = generate_prompt(prompt_path, level=level)
-        response = funcllama.generate_response(model=model, prompt=prompt, params=param)
-        response_string = funcllama.print_response(response)
+        response_string = backend.generate(model=model, prompt=prompt, params=param)
         execution_time = time.time() - start_time
         logger.log(model_name=model, ollama_params=param, prompt_path=path, prompt_type=description, data_representation=data_representation, prompt=prompt, response=response_string, execution_time=execution_time)
         print(f"[EXECUTION TIME]: {execution_time}")

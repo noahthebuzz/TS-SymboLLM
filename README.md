@@ -159,6 +159,17 @@ Every run automatically saves a diagram of the input series to `./plots/`
 (a single figure, with all series overlaid and a legend for multi-series
 data) — no extra flag needed.
 
+## Model backends
+
+The tool talks to models through a small `Backend` interface
+(`ts_symbollm/backends/base.py`) rather than depending on Ollama directly
+anywhere else in the codebase. `ts_symbollm/backends/ollama.py`'s
+`OllamaBackend` is the only implementation today. To add another backend
+(e.g. a hosted API for comparison), subclass `Backend`, implement
+`generate(model, prompt, params) -> str` (and `pull(model) -> bool` if the
+runtime needs an explicit download step), and add it alongside `ollama.py`
+under `ts_symbollm/backends/`.
+
 ## Configuration
 
 Shipped defaults (model tiers, Ollama sampling presets, representation

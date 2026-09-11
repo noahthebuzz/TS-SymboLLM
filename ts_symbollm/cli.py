@@ -7,9 +7,8 @@ import math
 import os
 from typing import Dict, Iterable, List, Tuple
 
-import ollama
-
 from . import plotting
+from .backends.ollama import OllamaBackend
 from .representation import Representation, apply as apply_representation, resolve_decimal_places
 
 # examples/ ships at the repo root, not inside the package, so this only
@@ -253,17 +252,6 @@ def load_prompt_template(path: str | None) -> str:
         return file.read()
 
 
-def generate_with_ollama(model: str, prompt: str) -> str:
-    response_text = ""
-    response = ollama.generate(model=model, prompt=prompt, stream=True)
-    for part in response:
-        chunk = part.get("response", "")
-        print(chunk, end="", flush=True)
-        response_text += chunk
-    print()
-    return response_text
-
-
 def list_examples() -> None:
     print("Available examples:")
     for name, path in EXAMPLES.items():
@@ -371,7 +359,8 @@ def main() -> None:
         print(prompt)
         print("\n--- End Prompt ---\n")
 
-    response_text = generate_with_ollama(args.model, prompt)
+    backend = OllamaBackend()
+    response_text = backend.generate(model=args.model, prompt=prompt)
 
     if args.output:
         with open(args.output, "w", encoding="utf-8") as file:
