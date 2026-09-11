@@ -1,5 +1,7 @@
 # TS-SymboLLM
 
+[![CI](https://github.com/noahthebuzz/TS-SymboLLM/actions/workflows/ci.yml/badge.svg)](https://github.com/noahthebuzz/TS-SymboLLM/actions/workflows/ci.yml)
+
 Local LLM showcase for interpreting time-series data. This repository lets you:
 
 - Run a **local Ollama model** against your own CSV/JSON time series.
@@ -229,6 +231,18 @@ Instead of `python app.py ...`, you can also install the tool and use the
 pip install -e .
 ts-symbollm --example temperature --model qwen2.5:7b
 ```
+
+## Running tests
+
+```bash
+pip install -e ".[dev]"
+pytest tests
+```
+
+Tests don't require a running Ollama server (network calls are mocked)
+and don't write any plot images outside of pytest's own temporary
+directories. CI (GitHub Actions) runs the same suite on every push to
+`master` and on every pull request.
 
 ## Notes
 
