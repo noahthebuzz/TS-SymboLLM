@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
-from tslearn.piecewise import SymbolicAggregateApproximation
-from tslearn.preprocessing import TimeSeriesScalerMeanVariance
+
+from ..representation import approximate_tsd, get_sax_string, get_sax_values
 
 
 
@@ -122,57 +122,6 @@ def generate_temperature_tsd(n_instances: int, interval_sec: int, time: datetime
     tsd_rounded = dict(zip(timestamps, rounded_data))
     tsd_sax = approximate_tsd(data=data, timestamps=timestamps)
     return [tsd_raw, tsd_rounded, tsd_sax]
-
-###########################################################
-
-def approximate_tsd(data: list[int], timestamps: list[str], n_paa_segments: int = 10, n_sax_symbols = 8) -> dict[str, int]:
-
-    dataset = np.array(data).reshape(1, -1)
-    #print(f"Dataset:\n{dataset}")
-
-    scaler = TimeSeriesScalerMeanVariance(mu=0., std=1.)  # Rescale time series
-    normalized_dataset = scaler.fit_transform(dataset)
-    sax = SymbolicAggregateApproximation(n_segments=n_paa_segments, alphabet_size_avg=n_sax_symbols)
-    sax_values = sax.fit_transform(normalized_dataset)
-
-    reduced_timestamps = timestamps[::round(len(timestamps)/n_paa_segments)]
-
-    return dict(zip(reduced_timestamps, sax_values[0].ravel().tolist()))
-
-
-def get_sax_string(data: dict) -> dict[str, str]:
-    keys = []
-    values = []
-    for datum in data.values():
-        for key in datum.keys():
-            keys.append(key)
-        for value in datum.values():
-            values.append(value)
-
-    alphabet = 'abcdefghijklmnopqrstuvwxyz'[:len(values)]
-    sax_string = [''.join([alphabet[int(i)] for i in values])][0]
-
-    return dict(zip(keys, sax_string))
-
-
-def get_sax_values(data: dict) -> dict[str, int]:
-    keys = []
-    values = []
-    for datum in data.values():
-        for key in datum.keys():
-            keys.append(key)
-        for value in datum.values():
-            values.append(value)
-
-    # match the letter in values to the corresponding number
-    # like a = 1, b = 2, c = 3, ...
-    sax_values = []
-    for i in values:
-        sax_values.append(ord(i) - ord('a') + 1)
-
-    return dict(zip(keys, sax_values))
-
-
 
 ###########################################################
 
