@@ -176,3 +176,7 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Personal / local-only files (not for version control)
+BA_Noah_Sarcevic_2025.pdf
+PLAN.md
