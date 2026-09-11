@@ -67,3 +67,27 @@ def test_apply_dispatches_to_the_matching_representation():
     ts = _timestamps(3)
     assert repr_mod.apply("raw", data, ts) == repr_mod.to_raw(data, ts)
     assert repr_mod.apply(repr_mod.Representation.ROUNDED, data, ts) == repr_mod.to_rounded(data, ts)
+
+
+def test_resolve_decimal_places_honors_explicit_value():
+    assert repr_mod.resolve_decimal_places(3) == 3
+
+
+def test_resolve_decimal_places_falls_back_to_config_default():
+    assert repr_mod.resolve_decimal_places() == repr_mod.DEFAULT_DECIMAL_PLACES
+
+
+def test_resolve_levels_honors_explicit_value():
+    assert repr_mod.resolve_levels(5) == 5
+
+
+def test_resolve_levels_falls_back_to_config_default():
+    assert repr_mod.resolve_levels() == repr_mod.DEFAULT_LEVELS
+
+
+def test_resolve_num_symbols_honors_explicit_value_regardless_of_length():
+    assert repr_mod.resolve_num_symbols(1000, num_symbols=3) == 3
+
+
+def test_resolve_num_symbols_falls_back_to_default_calculation():
+    assert repr_mod.resolve_num_symbols(100) == repr_mod.default_num_symbols(100)

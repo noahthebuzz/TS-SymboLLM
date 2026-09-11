@@ -36,6 +36,14 @@ List the available example datasets:
 python app.py --list-examples
 ```
 
+5. Try the symbolic representation — this is the actual research question
+   behind this tool: does compressing a series into a compact SAX string
+   help an LLM interpret it better than raw or rounded numbers?
+
+```bash
+python app.py --example temperature --model qwen2.5:7b --representation symbolic
+```
+
 ## Use your own data
 
 Provide a CSV or JSON file with time series data:
@@ -141,6 +149,9 @@ python app.py --help
 - `--max-points`: limit how many points per series are included in the prompt (defaults to 120).
 - `--show-prompt`: print the final prompt before sending it to the model.
 - `--output`: write the model response to a file.
+- `--representation raw|rounded|symbolic`: how series values are rendered in the prompt (default `raw`). `symbolic` compresses each series into a compact SAX letter string (e.g. `fbaaacdefg...`) instead of listing numeric values.
+- `--paa-segments`: number of PAA segments for `--representation symbolic` (default: `ceil(n/10)`, overridable via config).
+- `--alphabet-size`: SAX alphabet size for `--representation symbolic` (default: from config).
 - `--plot-dir`: where to save the diagram generated for this run (default `./plots/`, also overridable via config — see below).
 - `--no-plot`: skip generating a diagram for this run.
 

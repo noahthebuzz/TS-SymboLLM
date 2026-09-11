@@ -10,6 +10,7 @@ from typing import Dict, Iterable, List, Tuple
 import ollama
 
 from . import plotting
+from .representation import Representation, apply as apply_representation, resolve_decimal_places
 
 # examples/ ships at the repo root, not inside the package, so this only
 # resolves for an editable install (`pip install -e .`) run from a checkout.
@@ -54,11 +55,44 @@ def _coerce_float(value: object, field: str) -> float:
         raise ValueError(f"Value for '{field}' is not numeric: {value!r}") from None
 
 
-def _format_value(value: float | int) -> str:
+def _format_value(value: float | int, decimal_places: int | None = None) -> str:
     numeric = float(value)
+    if decimal_places is not None:
+        formatted = f"{numeric:.{max(decimal_places, 0)}f}"
+        return formatted.rstrip("0").rstrip(".") if decimal_places > 0 else formatted
     if numeric.is_integer():
         return str(int(numeric))
     return f"{numeric:.3f}".rstrip("0").rstrip(".")
+
+
+def _symbol_to_letter(value: float) -> str:
+    return chr(ord('a') + int(round(value)))
+
+
+def apply_representation_to_series(
+    series_data: Dict[str, List[Tuple[str, float]]],
+    representation: str,
+    decimal_places: int | None = None,
+    num_symbols: int | None = None,
+    levels: int | None = None,
+) -> Dict[str, List[Tuple[str, float]]]:
+    result: Dict[str, List[Tuple[str, float]]] = {}
+    for name, points in series_data.items():
+        if not points:
+            result[name] = []
+            continue
+        timestamps = [point[0] for point in points]
+        values = [point[1] for point in points]
+        transformed = apply_representation(
+            representation,
+            values,
+            timestamps,
+            decimal_places=decimal_places,
+            num_symbols=num_symbols,
+            levels=levels,
+        )
+        result[name] = list(transformed.items())
+    return result
 
 
 def _downsample(points: List[Tuple[str, float]], max_points: int | None) -> List[Tuple[str, float]]:
@@ -190,12 +224,25 @@ def summarize_series(series_data: Dict[str, List[Tuple[str, float]]]) -> str:
     return "\n".join(lines)
 
 
-def format_series_data(series_data: Dict[str, List[Tuple[str, float]]], max_points: int | None) -> str:
+def format_series_data(
+    series_data: Dict[str, List[Tuple[str, float]]],
+    max_points: int | None,
+    representation: str = Representation.RAW.value,
+    decimal_places: int | None = None,
+) -> str:
     lines = []
     for name, points in series_data.items():
+        if representation == Representation.SYMBOLIC.value:
+            # Already compressed to num_symbols by apply_representation_to_series,
+            # so render as a single compact SAX letter string, not one line per point.
+            letters = "".join(_symbol_to_letter(value) for _, value in points)
+            lines.append(f"{name}: {letters}")
+            continue
+
         lines.append(f"{name}:")
+        point_decimal_places = decimal_places if representation == Representation.ROUNDED.value else None
         for timestamp, value in _downsample(points, max_points):
-            lines.append(f"  {timestamp}: {_format_value(value)}")
+            lines.append(f"  {timestamp}: {_format_value(value, point_decimal_places)}")
     return "\n".join(lines)
 
 
@@ -246,6 +293,22 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--show-prompt", action="store_true", help="Print the prompt before sending.")
     parser.add_argument("--list-examples", action="store_true", help="List available example datasets.")
     parser.add_argument(
+        "--representation",
+        choices=[r.value for r in Representation],
+        default=Representation.RAW.value,
+        help="How to represent series values in the prompt (default: raw).",
+    )
+    parser.add_argument(
+        "--paa-segments",
+        type=int,
+        help="Number of PAA segments for --representation symbolic (default: ceil(n/10), overridable via config).",
+    )
+    parser.add_argument(
+        "--alphabet-size",
+        type=int,
+        help="SAX alphabet size for --representation symbolic (default: from config).",
+    )
+    parser.add_argument(
         "--plot-dir",
         help=f"Directory to save the generated diagram to (default: {plotting.DEFAULT_OUTPUT_DIR}, overridable via config).",
     )
@@ -269,18 +332,32 @@ def main() -> None:
         parser.error("No data path resolved. Use --data or --example.")
 
     series_data = load_time_series(data_path)
+    represented_series_data = apply_representation_to_series(
+        series_data,
+        representation=args.representation,
+        num_symbols=args.paa_segments,
+        levels=args.alphabet_size,
+    )
 
     if not args.no_plot:
         dataset_label = args.example or os.path.splitext(os.path.basename(data_path))[0]
         plot_path = plotting.plot_series(
-            series_data,
-            title=f"{dataset_label} (raw)",
+            represented_series_data,
+            title=f"{dataset_label} ({args.representation})",
             output_dir=args.plot_dir,
         )
         print(f"[PLOT] Saved diagram to {plot_path}")
 
+    # The summary always describes the real underlying values, even in
+    # symbolic mode, so the model has the true scale alongside the compact
+    # SAX string (which alone carries no absolute-value information).
     summary = summarize_series(series_data)
-    data_text = format_series_data(series_data, args.max_points)
+    data_text = format_series_data(
+        represented_series_data,
+        args.max_points,
+        representation=args.representation,
+        decimal_places=resolve_decimal_places(),
+    )
 
     prompt_template = load_prompt_template(args.prompt)
     prompt = prompt_template.format(
