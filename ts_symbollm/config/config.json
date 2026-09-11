@@ -1,19 +1,4 @@
 {
-    "logs": 5,
-    "setup": {
-        "noahthebuzz": {
-            "Processor": "Intel Core i7-12700H",
-            "RAM": "16 GB DDR4",
-            "GPU": "NVIDIA GeForce RTX 4060 (8GB GDDR6X, 3072 CUDA Cores)",
-            "OS": "Ubuntu 22.04"
-        },
-        "dbisai": {
-            "Processor": "Intel Core i9-14900K",
-            "RAM": "64 GB DDR5",
-            "GPU": "NVIDIA GeForce RTX 4090 (24GB GDDR6X, 16384 CUDA Cores)",
-            "OS": "Ubuntu 22.04"
-        }
-    },
     "ollama_parameter": {
         "rational": {
             "mirostat": 2,
@@ -73,5 +58,13 @@
             "qwen2.5:7b",
             "gemma:7b"
         ]
+    },
+    "representation": {
+        "rounded_decimal_places": 0,
+        "symbolic_levels": 10,
+        "symbolic_segment_length": 10
+    },
+    "plotting": {
+        "output_dir": "./plots/"
     }
 }

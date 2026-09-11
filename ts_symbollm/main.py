@@ -227,15 +227,6 @@ def generate_prompt(path: str, level: str) -> str:
         return prompt
 
 ####################################################################
-### INCREASE LOGS COUNTER
-####################################################################
-
-def increase_logs_counter():
-    logs = config._get_config_content(logs=True).get("logs")
-    logs += 1
-    config.write_json(data={"logs": logs}, path=config.CONFIG_PATH)
-
-####################################################################
 ### MAIN
 ####################################################################
 
@@ -277,12 +268,9 @@ def main():
             execution_time = time.time() - start_time
             logger.log(model_name=model, ollama_params=params, prompt_type=description, data_representation=data_representation, prompt=prompt, response=response_string, execution_time=execution_time)
             processing_counter += 1
-    increase_logs_counter()
 
 
 def one_by_one_test():
-    #increase_logs_counter()
-
     models = config.get_models(large=True, medium=True, small=True)
     models.sort()
     params = [config.get_ollama_parameter(isRational=True), config.get_ollama_parameter(isRational=False)]
@@ -337,7 +325,6 @@ def one_by_one_test():
         response_string = funcllama.print_response(response)
         execution_time = time.time() - start_time
         logger.log(model_name=model, ollama_params=param, prompt_path=path, prompt_type=description, data_representation=data_representation, prompt=prompt, response=response_string, execution_time=execution_time)
-        #increase_logs_counter()
         print(f"[EXECUTION TIME]: {execution_time}")
         print(f"\n ######################################################### \n")
             

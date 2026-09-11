@@ -2,6 +2,8 @@ import json
 import os
 
 CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
+USER_CONFIG_ENV_VAR = "TS_SYMBOLLM_CONFIG"
+DEFAULT_USER_CONFIG_PATH = os.path.join(os.path.expanduser("~"), ".config", "ts-symbollm", "config.json")
 
 
 ####################################################################
@@ -60,88 +62,80 @@ def read_json(path: str) -> dict | None:
 ####################################################################
 ### READ CONFIGURATION FILE
 ####################################################################
-    
-def _get_config_content(setup_usr: str = None, logs: bool = None, ollama_param: str = None, models: list[str] = None) -> dict | None:
-    if setup_usr is None and logs is None and ollama_param is None and models is None:
-        return None
-    try:
-        data = read_json(CONFIG_PATH)
-        new_data = {}
 
-        # USER
-        if setup_usr:
-            new_data.update({setup_usr: data.get("setup").get(setup_usr)})
-
-        # LOGS
-        if logs:
-            if data.get("logs") is not None:
-                new_data.update({"logs": data.get("logs")})
-            else:
-                new_data.update({"logs": 0})
-
-        # OLLAMA PARAMETER
-        if ollama_param:
-            if ollama_param == "rational":
-                new_data.update({"params": data.get("ollama_parameter").get("rational")})
-            elif ollama_param == "creative":
-                new_data.update({"params": data.get("ollama_parameter").get("creative")}) 
-
-        # MODELS
-        if models is not None:
-            model_list = []
-            for model in models:
-                for x in data.get("models").get(model):
-                    model_list.append(x)
-                new_data.update({"models": model_list})
-
-        return new_data
-    except Exception as e:
-        print(f"[ERROR]:\n{e}")
-        return None
-    
-
-def get_user_setup() -> dict:
+def _user_config_path() -> str | None:
     '''
-    Returns the PC setup for the current user
+    Resolves the user's config override file, if any: the path from the
+    TS_SYMBOLLM_CONFIG environment variable takes precedence, otherwise
+    ~/.config/ts-symbollm/config.json is used if it exists.
     '''
-    usr = os.getlogin()
-    return _get_config_content(setup_usr=usr).get(usr)
+    override = os.environ.get(USER_CONFIG_ENV_VAR)
+    if override:
+        return override
+    if os.path.exists(DEFAULT_USER_CONFIG_PATH):
+        return DEFAULT_USER_CONFIG_PATH
+    return None
 
 
-def get_logs() -> int:
+def _load_config() -> dict:
     '''
-    Returns the current log counter
+    Loads the shipped default config and overlays a user config file, if one
+    is found. Overriding a top-level section (e.g. "models") replaces that
+    section entirely rather than merging its individual keys.
     '''
-    return _get_config_content(logs=True).get("logs")
-    
+    data = read_json(CONFIG_PATH) or {}
+    user_path = _user_config_path()
+    if user_path:
+        user_data = read_json(user_path)
+        if user_data:
+            data.update(user_data)
+    return data
+
 
 def get_ollama_parameter(isRational: bool) -> dict:
     '''
     Returns the parameters for the OLLAMA model
     '''
-    options = _get_config_content(ollama_param="rational" if isRational else "creative")
-    return options.get("params")
-    
+    key = "rational" if isRational else "creative"
+    return _load_config().get("ollama_parameter", {}).get(key)
+
 
 def get_models(large: bool, medium: bool, small: bool) -> list[str]:
     '''
     Returns
     -------
-    "large" : ["qwen2.5:72b", "llama3.3:70b"]
+    "large" : ["qwen2.5:72b", "gemma3:27b", "mistral-small:24b"]
 
-    "medium" : ["qwen2.5:14b", "phi4:14b", "llava:13b"]
+    "medium" : ["qwen2.5:14b", "phi4:14b"]
 
-    "small" : ["llama3.1:8b", "mistral:7b", "qwen2.5:7b", "gemma:7b"]
+    "small" : ["mistral:7b", "qwen2.5:7b", "gemma:7b"]
     '''
+    tiers = _load_config().get("models", {})
     model_names = []
     if large:
-        model_names.append("large")
+        model_names.extend(tiers.get("large", []))
     if medium:
-        model_names.append("medium")
-    if small:    
-        model_names.append("small")
-    models = _get_config_content(models=model_names).get("models")
-    return models
+        model_names.extend(tiers.get("medium", []))
+    if small:
+        model_names.extend(tiers.get("small", []))
+    return model_names
+
+
+def get_representation_defaults() -> dict:
+    '''
+    Returns the default representation settings: rounding decimal places,
+    the SAX alphabet size ("levels"), and the symbolic segment-length
+    divisor used to derive a default number of PAA segments from a series'
+    length (n / symbolic_segment_length).
+    '''
+    return _load_config().get("representation", {})
+
+
+def get_plotting_config() -> dict:
+    '''
+    Returns the default plotting settings (diagram output directory).
+    '''
+    return _load_config().get("plotting", {})
 
 
 ####################################################################
