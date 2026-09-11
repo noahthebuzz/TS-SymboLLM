@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ts-symbollm"
+version = "0.1.0"
+description = "Local-first tool for benchmarking how well LLMs interpret time-series data across raw, rounded, and symbolic (PAA/SAX) representations."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=2.0",
+    "matplotlib>=3.9",
+    "ollama>=0.6",
+    "tslearn>=0.6",
+]
+
+[project.scripts]
+ts-symbollm = "ts_symbollm.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["ts_symbollm*"]
+
+[tool.setuptools.package-data]
+ts_symbollm = ["config/config.json"]

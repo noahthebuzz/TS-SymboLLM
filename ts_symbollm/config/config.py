@@ -1,6 +1,8 @@
 import json
 import os
 
+CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
+
 
 ####################################################################
 ### READ AND WRITE JSON FILES
@@ -63,7 +65,7 @@ def _get_config_content(setup_usr: str = None, logs: bool = None, ollama_param: 
     if setup_usr is None and logs is None and ollama_param is None and models is None:
         return None
     try:
-        data = read_json("src/config/config.json")
+        data = read_json(CONFIG_PATH)
         new_data = {}
 
         # USER
