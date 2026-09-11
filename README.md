@@ -130,15 +130,22 @@ python app.py --help
 - `--max-points`: limit how many points per series are included in the prompt (defaults to 120).
 - `--show-prompt`: print the final prompt before sending it to the model.
 - `--output`: write the model response to a file.
+- `--plot-dir`: where to save the diagram generated for this run (default `./plots/`, also overridable via config — see below).
+- `--no-plot`: skip generating a diagram for this run.
+
+Every run automatically saves a diagram of the input series to `./plots/`
+(a single figure, with all series overlaid and a legend for multi-series
+data) — no extra flag needed.
 
 ## Configuration
 
-Shipped defaults (model tiers, Ollama sampling presets) live in
+Shipped defaults (model tiers, Ollama sampling presets, representation
+settings, the plot output directory) live in
 `ts_symbollm/config/config.json`. To override them without editing the
 package, put your own JSON file at `~/.config/ts-symbollm/config.json`, or
 point the `TS_SYMBOLLM_CONFIG` environment variable at any file — a
-top-level section you provide (e.g. `"models"`) replaces that section
-entirely rather than merging individual keys.
+top-level section you provide (e.g. `"models"` or `"plotting"`) replaces
+that section entirely rather than merging individual keys.
 
 ## Repository layout
 

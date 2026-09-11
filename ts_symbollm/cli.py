@@ -9,6 +9,8 @@ from typing import Dict, Iterable, List, Tuple
 
 import ollama
 
+from . import plotting
+
 # examples/ ships at the repo root, not inside the package, so this only
 # resolves for an editable install (`pip install -e .`) run from a checkout.
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -243,6 +245,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output", help="Write the model response to a file.")
     parser.add_argument("--show-prompt", action="store_true", help="Print the prompt before sending.")
     parser.add_argument("--list-examples", action="store_true", help="List available example datasets.")
+    parser.add_argument(
+        "--plot-dir",
+        help=f"Directory to save the generated diagram to (default: {plotting.DEFAULT_OUTPUT_DIR}, overridable via config).",
+    )
+    parser.add_argument("--no-plot", action="store_true", help="Skip generating a diagram for this run.")
     return parser
 
 
@@ -262,6 +269,16 @@ def main() -> None:
         parser.error("No data path resolved. Use --data or --example.")
 
     series_data = load_time_series(data_path)
+
+    if not args.no_plot:
+        dataset_label = args.example or os.path.splitext(os.path.basename(data_path))[0]
+        plot_path = plotting.plot_series(
+            series_data,
+            title=f"{dataset_label} (raw)",
+            output_dir=args.plot_dir,
+        )
+        print(f"[PLOT] Saved diagram to {plot_path}")
+
     summary = summarize_series(series_data)
     data_text = format_series_data(series_data, args.max_points)
 
