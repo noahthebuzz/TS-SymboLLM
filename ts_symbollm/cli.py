@@ -5,11 +5,17 @@ import csv
 import json
 import math
 import os
-from typing import Dict, Iterable, List, Tuple
+import sys
+import time
+from typing import Dict, Iterable, List, Optional, Tuple
 
 from . import plotting
 from .backends.ollama import OllamaBackend
+from .config import config
+from .prompt import PromptBuilder
 from .representation import Representation, apply as apply_representation, resolve_decimal_places
+from .results import ResultRecord, ResultsWriter
+from .scoring import TrendKeywordScorer
 
 # examples/ ships at the repo root, not inside the package, so this only
 # resolves for an editable install (`pip install -e .`) run from a checkout.
@@ -18,6 +24,22 @@ EXAMPLES = {
     "temperature": os.path.join(REPO_ROOT, "examples", "data", "temperature.csv"),
     "cpu": os.path.join(REPO_ROOT, "examples", "data", "cpu_multi.json"),
 }
+
+# Ground-truth metadata for bundled examples with a known, scoreable trend
+# (see ts_symbollm.scoring.KNOWN_TREND_PATTERNS). Datasets not listed here
+# simply aren't scored, even with --score, since there's no known ground
+# truth to check a response against.
+EXAMPLE_METADATA = {
+    "temperature": {"trend": "increasing"},
+}
+
+DEFAULT_RESULTS_PATH = os.path.join(".", "results", "results.jsonl")
+
+DEFAULT_BENCHMARK_DESIRED_OUTPUT = (
+    "Key patterns and trends; notable anomalies or shifts; likely explanations if possible; "
+    "and suggested next checks or follow-up analysis. If the data is insufficient, say so and "
+    "explain what is missing."
+)
 
 DEFAULT_PROMPT_TEMPLATE = """You are a data analyst helping interpret time series data.
 
@@ -258,9 +280,192 @@ def list_examples() -> None:
         print(f"  - {name}: {os.path.relpath(path, REPO_ROOT)}")
 
 
+def _parse_list(value: str) -> List[str]:
+    return [item.strip() for item in value.split(",") if item.strip()]
+
+
+def _resolve_dataset_path(token: str) -> str:
+    return EXAMPLES.get(token, token)
+
+
+def _dataset_label(token: str) -> str:
+    '''A short, filesystem-safe label for a dataset token, for use in plot
+    titles/filenames -- a bundled example name as-is, or just the
+    filename (no directory, no extension) for an arbitrary path.'''
+    if token in EXAMPLES:
+        return token
+    return os.path.splitext(os.path.basename(token))[0]
+
+
+def _resolve_params_preset(name: str) -> Optional[dict]:
+    if name == "default":
+        return None
+    if name == "rational":
+        return config.get_ollama_parameter(isRational=True)
+    if name == "creative":
+        return config.get_ollama_parameter(isRational=False)
+    raise ValueError(f"Unknown --params preset: {name!r} (use default, rational, or creative)")
+
+
+def _print_summary_table(records: List[ResultRecord]) -> None:
+    headers = ["dataset", "representation", "model", "latency_s", "score"]
+    rows = [
+        [
+            record.dataset_id,
+            record.representation,
+            record.model,
+            f"{record.latency_seconds:.2f}",
+            "-" if record.score is None else f"{record.score:.2f}",
+        ]
+        for record in records
+    ]
+    widths = [
+        max(len(header), *(len(row[i]) for row in rows)) if rows else len(header)
+        for i, header in enumerate(headers)
+    ]
+
+    def _format_row(cells: List[str]) -> str:
+        return "  ".join(cell.ljust(width) for cell, width in zip(cells, widths))
+
+    print(_format_row(headers))
+    print(_format_row(["-" * width for width in widths]))
+    for row in rows:
+        print(_format_row(row))
+
+
+def build_benchmark_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="ts-symbollm benchmark",
+        description="Run a model x representation x dataset benchmark matrix, writing one structured result row per run.",
+    )
+    parser.add_argument(
+        "--data",
+        required=True,
+        help="Comma-separated dataset paths and/or bundled example names (see --list-examples).",
+    )
+    parser.add_argument("--model", required=True, help="Comma-separated model names to test.")
+    parser.add_argument(
+        "--representation",
+        default=Representation.RAW.value,
+        help="Comma-separated representations to sweep: raw,rounded,symbolic (default: raw).",
+    )
+    parser.add_argument(
+        "--params",
+        default="default",
+        help="Comma-separated sampling-parameter presets to sweep: default,rational,creative (default: default).",
+    )
+    parser.add_argument(
+        "--question",
+        default="Interpret the series and explain patterns, anomalies, and potential causes.",
+        help="Task/question included in the prompt.",
+    )
+    parser.add_argument(
+        "--paa-segments",
+        type=int,
+        help="PAA segments for symbolic representation (default: ceil(n/10), overridable via config).",
+    )
+    parser.add_argument(
+        "--alphabet-size",
+        type=int,
+        help="SAX alphabet size for symbolic representation (default: from config).",
+    )
+    parser.add_argument(
+        "--results",
+        default=DEFAULT_RESULTS_PATH,
+        help=f"Path to the structured results file, JSONL or CSV by extension (default: {DEFAULT_RESULTS_PATH}).",
+    )
+    parser.add_argument(
+        "--plot-dir",
+        help=f"Directory to save diagrams to (default: {plotting.DEFAULT_OUTPUT_DIR}, overridable via config).",
+    )
+    parser.add_argument("--no-plot", action="store_true", help="Skip generating diagrams for this run.")
+    parser.add_argument(
+        "--score",
+        action="store_true",
+        help="Enable automatic scoring for datasets with known ground truth (see EXAMPLE_METADATA).",
+    )
+    return parser
+
+
+def run_benchmark(args: argparse.Namespace) -> None:
+    dataset_tokens = _parse_list(args.data)
+    models = _parse_list(args.model)
+    representations = _parse_list(args.representation)
+    params_presets = _parse_list(args.params)
+
+    backend = OllamaBackend()
+    writer = ResultsWriter(args.results)
+    scorer = TrendKeywordScorer() if args.score else None
+
+    records: List[ResultRecord] = []
+
+    for dataset_token in dataset_tokens:
+        dataset_path = _resolve_dataset_path(dataset_token)
+        series_data = load_time_series(dataset_path)
+        dataset_metadata = EXAMPLE_METADATA.get(dataset_token, {})
+
+        for representation in representations:
+            if not args.no_plot:
+                represented_series_data = apply_representation_to_series(
+                    series_data,
+                    representation=representation,
+                    num_symbols=args.paa_segments,
+                    levels=args.alphabet_size,
+                )
+                plot_path = plotting.plot_series(
+                    represented_series_data,
+                    title=f"{_dataset_label(dataset_token)} ({representation})",
+                    output_dir=args.plot_dir,
+                )
+                print(f"[PLOT] Saved diagram to {plot_path}")
+
+            builder = PromptBuilder(task=args.question, desired_output=DEFAULT_BENCHMARK_DESIRED_OUTPUT)
+            for name, points in series_data.items():
+                builder.add_series(
+                    context=name,
+                    points=points,
+                    representation=representation,
+                    num_symbols=args.paa_segments,
+                    levels=args.alphabet_size,
+                )
+            prompt = builder.build()
+
+            for model in models:
+                for params_name in params_presets:
+                    params = _resolve_params_preset(params_name)
+                    print(f"\n[BENCHMARK] dataset={dataset_token} representation={representation} model={model} params={params_name}\n")
+                    start_time = time.time()
+                    response = backend.generate(model=model, prompt=prompt, params=params)
+                    latency_seconds = time.time() - start_time
+
+                    score_result = None
+                    if scorer is not None and dataset_metadata.get("trend"):
+                        score_result = scorer.score(dataset_metadata, prompt, response)
+
+                    record = ResultRecord.create(
+                        model=model,
+                        representation=representation,
+                        dataset_id=dataset_token,
+                        params=params,
+                        prompt=prompt,
+                        response=response,
+                        latency_seconds=latency_seconds,
+                        score=score_result.score if score_result else None,
+                        score_notes=score_result.notes if score_result else None,
+                    )
+                    writer.write(record)
+                    records.append(record)
+
+    print(f"\n[BENCHMARK] wrote {len(records)} result(s) to {args.results}\n")
+    _print_summary_table(records)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Analyze time series data with a local Ollama model.",
+        description=(
+            "Analyze time series data with a local Ollama model. "
+            "Run `ts-symbollm benchmark --help` for the model x representation x dataset benchmark runner."
+        ),
     )
     parser.add_argument("--model", default="qwen2.5:7b", help="Ollama model name to use.")
     parser.add_argument("--data", help="Path to a CSV or JSON time series file.")
@@ -305,8 +510,13 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main() -> None:
+    argv = sys.argv[1:]
+    if argv and argv[0] == "benchmark":
+        run_benchmark(build_benchmark_parser().parse_args(argv[1:]))
+        return
+
     parser = build_parser()
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if args.list_examples:
         list_examples()

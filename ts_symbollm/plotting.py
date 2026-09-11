@@ -74,7 +74,11 @@ def plot_series(
     plt.xticks(rotation=22.5)
     fig.tight_layout()
 
-    safe_name = (filename or title).replace(" ", "_")
+    # Guard against a caller passing a path-like title/filename (e.g. a raw
+    # dataset path): os.path.join silently discards output_dir if the
+    # second argument looks absolute, so strip path separators too, not
+    # just spaces.
+    safe_name = (filename or title).replace(" ", "_").replace("/", "_").replace("\\", "_")
     path = os.path.join(output_dir, f"{safe_name}_plot.png")
     fig.savefig(path)
     plt.close(fig)
