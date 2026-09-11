@@ -1,69 +1,14 @@
+'''
+Synthetic time-series generators for the optional showcase (see
+examples/showcase/README.md). These exist purely to fabricate demo
+datasets when you don't have your own data handy — the installable
+ts_symbollm package does not depend on any of this.
+'''
+
 import numpy as np
-import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 
-from ..representation import approximate_tsd, get_sax_string, get_sax_values
-
-
-
-##########################################################
-### PLOT FUNCTIONS
-##########################################################
-
-# TODO:
-# Multi TSD Plot with each TSD in a separate subplot
-# Multi TSD Plot with each TSD in a separate subplot and a shared y-axis
-def plot_single_tsd(data: dict, abstraction_level: str, title: str, xlabel: str, ylabel: str, save: bool = False, location: str = "./plots/") -> None:
-    fig, ax = plt.subplots(figsize=(15, 7))
-    ax.plot(data.keys(), data.values(), marker='o', color='r')
-    ax.set_title(title + f" ({abstraction_level})")
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
-    ax.grid(visible=True, which='both', linewidth='0.5', color='gray')
-    max_data_value = max(data.values())
-    max_yticks = np.arange(0, round(max_data_value*1.25, -1), 1)[::5]
-    if len(max_yticks) >= 10:
-        ax.set_yticks(max_yticks[::len(max_yticks)//10])
-    if len(data) >= 11:
-        ax.set_xticks(list(data.keys())[::(len(data)//11)])
-    plt.xticks(rotation=22.5)
-
-    if save:
-        title = title.replace(" ", "_")
-        plt.savefig(f"{location}{title}_plot.png")
-
-
-def plot_multi_tsd(data: list[dict], labels: list[dict], abstraction_level: str, title: str, xlabel: str, ylabel: str, save: bool = False, location: str = "./plots/") -> None:
-    fig, ax = plt.subplots(figsize=(15, 7))
-    colors = ['b', 'r', 'g', 'c', 'm', 'y', 'k', 'w']
-    for i in range(len(data)):
-        ax.plot(data[i].keys(), data[i].values(), marker='o', color=colors[i], label=labels[i])
-    ax.set_title(title + f" ({abstraction_level})")
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
-    ax.grid(visible=True, which='both', linewidth='0.5', color='gray')
-    plt.xticks(rotation=22.5)
-    ax.legend(loc='best', fontsize=10)
-
-    # Determine number of ticks in both x and y axis
-    # data have the same dimensions
-    max_data_value = 1
-    for dataset in data:
-        max_data_value = max(max_data_value, max(dataset.values()))
-
-    max_yticks = np.arange(0, round(max_data_value*1.3, -1), 1)[::5]
-    if len(max_yticks) >= 10:
-        ax.set_yticks(max_yticks[::len(max_yticks)//10])
-    if len(data[0]) >= 11:
-        ax.set_xticks(list(data[0].keys())[::(len(data[0])//11)])
-
-    if save:
-        title = title.replace(" ", "_")
-        plt.savefig(f"{location}{title}_plot.png")
-
-
-def plot_multi_tsd_separate(data: list[dict], labels: list[dict], abstraction_level: str, title: str, xlabel: str, ylabel: str, save: bool = False, location: str = "./plots/") -> None:
-    None
+from ts_symbollm.representation import approximate_tsd
 
 
 ##########################################################
@@ -110,12 +55,12 @@ def _generate_temperature_data(n_data_points: int, start_temp: float, stable_dev
 def generate_temperature_tsd(n_instances: int, interval_sec: int, time: datetime = datetime.now()) -> list[dict]:
     timestamps = _generate_time_instances(time, interval_sec, n_instances)
     data = _generate_temperature_data(
-            n_data_points=n_instances, 
-            start_temp=50, 
-            stable_deviation=0.75, 
-            unstable_start=round(n_instances//2.5), 
-            unstable_deviation=3.5, 
-            expo_increase_start=round(n_instances//1.75), 
+            n_data_points=n_instances,
+            start_temp=50,
+            stable_deviation=0.75,
+            unstable_start=round(n_instances//2.5),
+            unstable_deviation=3.5,
+            expo_increase_start=round(n_instances//1.75),
             final_temp=95)
     tsd_raw = dict(zip(timestamps, data))
     rounded_data = np.around(data, 0).tolist()
@@ -258,22 +203,22 @@ def generate_roomtemp_tsd(n_instances: int, interval_sec: int, time: datetime = 
 
 ###########################################################
 
-def _generate_sequence_data(n_instances: int,  type_of_sequence: int, every_n_th_number: int = 3) -> list[int]:    
+def _generate_sequence_data(n_instances: int,  type_of_sequence: int, every_n_th_number: int = 3) -> list[int]:
     if every_n_th_number < 1:
         every_n_th_number = 1
 
     if type_of_sequence == 0 or type_of_sequence == 1:
         # return every n-th number of even/odd numbers
         return [i for i in range(type_of_sequence, n_instances * 2 * every_n_th_number, 2 * every_n_th_number)]
-    
+
     elif type_of_sequence == 2:
         # return every n-th number of squares
         return [i**2 for i in range(0, n_instances * every_n_th_number, every_n_th_number)]
-    
+
     elif type_of_sequence == 3:
         # return every n-th number of the oscillating harmonic sequence
         return [round(1/i, 2) if i % 2 == 0 else round(-1/i, 2) for i in range(1, n_instances * every_n_th_number + 1, every_n_th_number)]
-    
+
     elif type_of_sequence == 4:
         # return every n-th number of the prime numbers
         primes = [2]
@@ -286,11 +231,11 @@ def _generate_sequence_data(n_instances: int,  type_of_sequence: int, every_n_th
                 primes.append(i)
             i += 1
         return [primes[i] for i in range(0, n_instances * every_n_th_number, every_n_th_number)]
-    
+
 def generate_sequence_tsd(n_instances: int, interval_sec: int, sequence: int, time: datetime = datetime.now()) -> dict:
     timestamps = _generate_time_instances(time, interval_sec, n_instances)
     data = _generate_sequence_data(n_instances=n_instances, type_of_sequence=sequence)
     tsd = dict(zip(timestamps, data))
     return tsd
-        
+
 ###########################################################
