@@ -121,6 +121,18 @@ def get_models(large: bool, medium: bool, small: bool) -> list[str]:
     return model_names
 
 
+def resolve_model_size(model: str) -> str:
+    '''
+    Returns which configured tier ("large", "medium", "small") a model
+    name belongs to, or "unknown" if it isn't listed in any tier.
+    '''
+    tiers = _load_config().get("models", {})
+    for size, names in tiers.items():
+        if model in names:
+            return size
+    return "unknown"
+
+
 def get_representation_defaults() -> dict:
     '''
     Returns the default representation settings: rounding decimal places,
