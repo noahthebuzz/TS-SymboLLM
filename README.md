@@ -5,6 +5,7 @@ Local LLM showcase for interpreting time-series data. This repository lets you:
 - Run a **local Ollama model** against your own CSV/JSON time series.
 - Try **built-in example datasets** without any extra setup.
 - Customize prompts for different analysis tasks (anomalies, summaries, forecasts, etc.).
+- Generate **synthetic demo data** if you don't have a dataset handy yet (see [Trying it without your own data](#trying-it-without-your-own-data)).
 
 ## Quickstart
 
@@ -50,6 +51,16 @@ python app.py --data /path/to/your/data.json \
   --prompt examples/prompts/interpretation.txt \
   --question "Summarize trends and highlight anomalies."
 ```
+
+## Trying it without your own data
+
+Don't have a dataset on hand? `examples/showcase/` is an optional script
+that fabricates synthetic single- and multi-series datasets (simulated
+CPU temperature, capacity, fan speed, etc.) plus diagrams and
+raw/rounded/symbolic prompt files, purely so you have something to run the
+tool against. It's a demo aid, not a core feature — the installable
+`ts_symbollm` package has no dependency on it. See
+[`examples/showcase/README.md`](examples/showcase/README.md) for usage.
 
 ## Supported data formats
 
@@ -155,8 +166,10 @@ that section entirely rather than merging individual keys.
 ├── pyproject.toml          # Installable package definition
 ├── examples/
 │   ├── data/                # Example datasets
-│   └── prompts/             # Example prompt templates
-└── ts_symbollm/             # Installable package: CLI + original research utilities
+│   ├── prompts/             # Example prompt templates
+│   └── showcase/            # Optional synthetic-data demo (not part of the package)
+├── tests/                   # Unit tests
+└── ts_symbollm/             # Installable package (CLI, config, representation, plotting, legacy harness)
 ```
 
 ## Installing as a package

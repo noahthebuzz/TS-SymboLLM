@@ -180,3 +180,9 @@ cython_debug/
 # Personal / local-only files (not for version control)
 BA_Noah_Sarcevic_2025.pdf
 PLAN.md
+
+# Locally generated run output (plots, generated prompt JSON files)
+/plots/
+/prompts/
+examples/showcase/plots/
+examples/showcase/prompts/
