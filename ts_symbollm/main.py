@@ -1,13 +1,13 @@
 
 
-import utils.funcllama as funcllama
 import numpy as np
-from config import config
-from utils import datagen
-import logger
 import time
-import os
 from datetime import datetime
+
+from . import logger
+from .config import config
+from .utils import datagen
+from .utils import funcllama
 
 
 ####################################################################
@@ -233,7 +233,7 @@ def generate_prompt(path: str, level: str) -> str:
 def increase_logs_counter():
     logs = config._get_config_content(logs=True).get("logs")
     logs += 1
-    config.write_json(data={"logs": logs}, path="src/config/config.json")
+    config.write_json(data={"logs": logs}, path=config.CONFIG_PATH)
 
 ####################################################################
 ### MAIN
@@ -241,12 +241,9 @@ def increase_logs_counter():
 
 def main():
 
-    # Determine the models to test based on the user
+    # Which model tiers to test — left off by default; callers can flip these on directly.
     models = []
-    if os.getlogin() == "dbisai":
-        test_large_models, test_medium_models, test_small_models = True, True, True
-    else:
-        test_large_models, test_medium_models, test_small_models = False, False, False
+    test_large_models, test_medium_models, test_small_models = False, False, False
 
     if test_large_models or test_medium_models or test_small_models:
         models = config.get_models(large=test_large_models, medium=test_medium_models, small=test_small_models)
@@ -346,16 +343,10 @@ def one_by_one_test():
             
 
 if __name__ == "__main__":
-    if os.getlogin() == "dbisai":
-        #generate_data(random=True, temperature=True, sequence=True, multi_tsd=True)
-        #main()
-        #one_by_one_test()
-        generate_data(temperature=True)
-        None
-    else:
-        #generate_data(multi_5_tsd=True)
-        generate_data(temperature=True)
-        None
+    #generate_data(random=True, temperature=True, sequence=True, multi_tsd=True)
+    #main()
+    #one_by_one_test()
+    generate_data(temperature=True)
 
 
 # Anfangstext "TS-SymboLLM", was kann er, was tut er, help?, etc.

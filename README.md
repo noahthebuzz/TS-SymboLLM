@@ -135,11 +135,22 @@ python app.py --help
 
 ```
 .
-├── app.py                  # CLI entry point
+├── app.py                  # Thin CLI entry point (same as running `ts-symbollm`)
+├── pyproject.toml          # Installable package definition
 ├── examples/
 │   ├── data/                # Example datasets
 │   └── prompts/             # Example prompt templates
-└── src/                     # Original research utilities (data generation, logging, etc.)
+└── ts_symbollm/             # Installable package: CLI + original research utilities
+```
+
+## Installing as a package
+
+Instead of `python app.py ...`, you can also install the tool and use the
+`ts-symbollm` command from any directory:
+
+```bash
+pip install -e .
+ts-symbollm --example temperature --model qwen2.5:7b
 ```
 
 ## Notes
